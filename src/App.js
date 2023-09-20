@@ -2,12 +2,13 @@ import logo from './logo.svg';
 import './App.css';
 import Attempt from './components/attempt';
 import Title from './components/title';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 
 function App() {
   const [attempts, setAttempts] = useState(['', '', '', '', '']);
   const [input, setInput] = useState('');
   const [width, setWidth] = useState(0);
+  const progressBar = useRef(null);
   const answer = "chaewon";
   function handleGuess() {
     for (var i = 0; i < 5; i++) {
@@ -22,15 +23,19 @@ function App() {
     }
     setInput('');
     let bar = document.getElementById('bar');
-    bar.classList.remove(`w-${width}/16`);
     if (bar.classList.contains(`w-${width}/16`)) {
-      console.log("fdasfasd");
+      console.log("its there!");
     }
-    bar.classList.add(`w-${width+1}/16`);
+    progressBar.current.classList.remove(`w-${width}/16`);
+    // bar.classList.remove(`w-${width}/16`);
+    if (bar.classList.contains(`w-${width}/16`)) {
+      console.log("its there!");
+    }
+    progressBar.current.classList.add(`w-${width+1}/16`);
+    // bar.classList.add(`w-${width+1}/16`);
     if (bar.classList.contains(`w-${width+1}/16`)) {
-      console.log(`w-${width+1}/16`);
+      console.log("its there! part 2!");
     }
-    console.log(width+1);
     setWidth(width+1);
   }
   return (
@@ -44,16 +49,10 @@ function App() {
         <Attempt value={attempts[2]} />
         <Attempt value={attempts[3]} />
         <Attempt value={attempts[4]} />
-        {/* <Attempt attempts={attempts}/> */}
       </div>
       <div className="Game" class="flex flex-col items-center space-y-2">
         <div className="Bar" class="w-full border h-5">
-          {/* <div class="w-0/16 bg-blue-600 h-6 rounded-full transition-all ease-out duration-1000" />
-          <div class="w-1/16 bg-blue-600 h-6 rounded-full transition-all ease-out duration-1000" />
-          <div class="w-2/16 bg-blue-600 h-6 rounded-full transition-all ease-out duration-1000" />
-          <div class="w-3/16 bg-blue-600 h-6 rounded-full transition-all ease-out duration-1000" />
-          <div class="w-4/16 bg-blue-600 h-6 rounded-full transition-all ease-out duration-1000" /> */}
-          <div id='bar' class="w-0/16 bg-blue-600 h-6 rounded-full transition-all ease-out duration-1000" >
+          <div ref={progressBar} id="bar"  style={{width: width/16.0 * 100 + '%'}}class="bg-blue-600 h-6 rounded-full transition-all ease-out duration-1000" >
 
           </div>
           <div className="ProgressBar" class="-my-6 grid grid-cols-16 divide-x-6">
