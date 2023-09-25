@@ -3,6 +3,9 @@ import './App.css';
 import Attempt from './components/attempt';
 import Title from './components/title';
 import GameBar from './components/gameBar';
+import PlayButton from './components/playButton';
+import { VolumeDown, VolumeUp } from './components/svg';
+import Autocomplete from './components/autocomplete';
 import { useState } from 'react';
 
 function App() {
@@ -22,11 +25,15 @@ function App() {
   const [input, setInput] = useState('');
   const [count, setCount] = useState(0);
   const [skip, setSkip] = useState(1);
+  const [volume, setVolume] = useState(100);
   const [duration] = useState([1, 2, 4, 7, 11, 16]);
   const [songBar, setSongBar] = useState({duration: duration[count],width: 0,})
   const [sectionColors, setSectionColors] = useState(
     [CURRENT, FUTURE, FUTURE, FUTURE, FUTURE, FUTURE]
   )
+  const [startTime, setStartTime] = useState(0);
+  const [sliderDisabled, setSliderDisabled] = useState(false);
+
   const answer = "chaewon";
   function moveBar() {
     sectionColors[count] = PAST;
@@ -79,16 +86,36 @@ function App() {
       </div>
       <div className="Game" class="flex flex-col items-center space-y-2">
         <GameBar duration={duration[count]} songBar={songBar} sectionColors={sectionColors}/>
-        <button type="button" onClick={handlePlay}>
-          <svg xmlns="http://www.w3.org/2000/svg" width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="10" />
-            <polygon points="10 8 16 12 10 16 10 8" />
-          </svg>
-          <span class="sr-only">Play Button</span>
-        </button>
-        <label class="w-3/6 border-2 border-solid border-[#afcbdd]">
-          <input class="w-full bg-[#1a2633] outline-none text-white" value={input} onChange={e => setInput(e.target.value)} />
-        </label>
+        <PlayButton
+                  duration={duration[count]}
+                  setSliderDisabled={setSliderDisabled}
+                  setSongBar={setSongBar}
+                  startTime={startTime}
+                />
+        <div class="w-2/6 flex flex-row">
+                <VolumeDown />
+                <input type="range" class="w-full" min="0" max="100"
+                  value={volume}
+                  onInput={(e) => { setVolume(e.target.value) }}
+                />
+                <VolumeUp />
+              </div>
+              <Autocomplete
+                userInput={input}
+                setUserInput={setInput}
+                suggestions={[
+                  "Alligator",
+                  "Bask",
+                  "Crocodilian",
+                  "Death Roll",
+                  "Eggs",
+                  "Jaws",
+                  "Reptile",
+                  "Solitary",
+                  "Tail",
+                  "Wetlands"
+                ]}
+              />
         <div class="w-3/6 flex justify-between">
           <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded " onClick={handleSkip}>
             Skip ({skip}s)
