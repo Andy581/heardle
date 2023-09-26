@@ -1,19 +1,39 @@
-import logo from './logo.svg';
 import './App.css';
 import Attempts from './components/attempt';
 import Title from './components/title';
 import GameBar from './components/gameBar';
-import PlayButton from './components/playButton';
-import { VolumeDown, VolumeUp } from './components/svg';
-import Autocomplete from './components/autocomplete';
 import { useState, useEffect } from 'react';
+import PlayButton from './components/playButton';
+import Countdown from './components/countdown'
 import axios from 'axios';
+import Autocomplete from './components/autocomplete';
+import Results from './components/results';
+import { Loading, VolumeDown, VolumeUp } from './components/svg';
+import { initializeApp } from 'firebase/app';
+import { getFirestore, collection, query, getDocs, doc, getDoc, updateDoc } from 'firebase/firestore';
 import moment from 'moment/moment';
 
+const firebaseConfig = {
+ 
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// Gonna move all this crap when we have different pages
 function App() {
-  const CURRENT = '#afcbdd';
+  const CURRENT = '#38bdf8';
   const PAST = '#000000';
   const FUTURE = '#505050';
+  const SKIPPED = '#808080';
+  const WRONG = '#ff0000';
+  const CORRECT = '#008000'
+  const [correct, setCorrect] = useState(false);
+  const [startTime, setStartTime] = useState(0);
+  const [sliderDisabled, setSliderDisabled] = useState(false);
+  const [volume, setVolume] = useState(100);
+  const [videoLoaded, setVideoLoaded] = useState(false);
+  const API_KEY = ''
   const [attemptDetails, setAttemptDetails] = useState(
     [
       { focus: true, value: "", color: "#ffffff" },
@@ -27,34 +47,58 @@ function App() {
   const [input, setInput] = useState('');
   const [count, setCount] = useState(0);
   const [skip, setSkip] = useState(1);
-  const [volume, setVolume] = useState(100);
   const [duration] = useState([1, 2, 4, 7, 11, 16]);
-  const [songBar, setSongBar] = useState({duration: duration[count],width: 0,})
+  const [gameEnded, setGameEnded] = useState(false);
+  const [songBar, setSongBar] = useState({ duration: duration[count], width: 0, })
   const [sectionColors, setSectionColors] = useState(
     [CURRENT, FUTURE, FUTURE, FUTURE, FUTURE, FUTURE]
   )
-  const [startTime, setStartTime] = useState(0);
-  const [sliderDisabled, setSliderDisabled] = useState(false);
   const [items, setItems] = useState([]);
   const [video, setVideo] = useState({ videoId: '', maxTime: 0, title: 'dummyTitle' });
-  const API_KEY = 'AIzaSyAXNMKtBRg03be1hymheUTNFko38clHJ5A';
-
-  const answer = "chaewon";
-  function moveBar() {
+  const isToday = (someDate) => {
+    const today = new Date()
+    someDate = new Date(someDate);
+    return someDate.getDate() === today.getDate() &&
+      someDate.getMonth() === today.getMonth() &&
+      someDate.getFullYear() === today.getFullYear()
+  }
+  function movePotentialBar() {
     sectionColors[count] = PAST;
-    sectionColors[count+1] = CURRENT;
+    sectionColors[count + 1] = CURRENT;
     attemptDetails[count].focus = false;
-    attemptDetails[count+1].focus = true;
+    attemptDetails[count + 1].focus = true;
     setSectionColors(sectionColors);
-    setCount(count+1);
+    console.log(count);
+    setCount(count + 1);
   }
   function handleSkip() {
     setSkip(skip + 1);
-    attemptDetails[count].skipped = true;
+    attemptDetails[count].value = "Skipped";
+    attemptDetails[count].color = SKIPPED;
     setAttemptDetails(attemptDetails);
-    moveBar();
+    if (count >= 5) {
+      return handleEndGame();
+    }
+    movePotentialBar();
   }
-  
+  function handleEndGame() {
+    setGameEnded(true);
+    setSliderDisabled(true);
+  }
+  function handleGuess() {
+    attemptDetails[count].value = input;
+    setInput('');
+    if (input === video.title) {
+      attemptDetails[count].color = CORRECT;
+      setCorrect(true);
+      return handleEndGame();
+    }
+    attemptDetails[count].color = WRONG;
+    if (count === 5) {
+      return handleEndGame();
+    }
+    movePotentialBar();
+  }
   function getRandomInt(max) { return Math.floor(Math.random() * max); }
   function handleSliderRelease(value) {
     var youtubeEmbedWindow = document.getElementById("secretVideo").contentWindow;
@@ -63,16 +107,23 @@ function App() {
     youtubeEmbedWindow.postMessage(message, '*');
     youtubeEmbedWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
   }
-  function handleGuess() {
-    attemptDetails[count].value = input;
-    moveBar();
-    setInput('');
-    if (input === answer) {
-      alert("the answer is chaewon!");
-    }
+  function handleVolume(value) {
+    var youtubeEmbedWindow = document.getElementById("secretVideo").contentWindow;
+    var data = { event: 'command', func: 'setVolume', args: [value] }
+    var message = JSON.stringify(data);
+    youtubeEmbedWindow.postMessage(message, '*');
+
   }
   useEffect(() => { gameStart(); }, [])
   const gameStart = async () => {
+    const docRef = doc(db, "dailyHeardle", "kpop");
+    const docSnap = await getDoc(docRef);
+    const daily = docSnap.data();
+    console.log(docSnap.data());
+    if (isToday(daily.date)) {
+      setVideo({ title: daily.title, maxTime: daily.maxTime, videoId: daily.videoId })
+    }
+    else {
       var pageInfo;
       var nextPageToken = '';
       var playlist = await axios.get(`https://youtube.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=PLOHoVaTp8R7dfrJW5pumS0iD_dhlXKv17&key=${API_KEY}`);
@@ -86,9 +137,12 @@ function App() {
         nextPageToken = nextPage.data.nextPageToken;
       }
       setItems(data);
-      getRandomVideo(data);
+      getRandomVideo(data, docRef);
+    }
+    setTimeout(() => setVideoLoaded(true), 1000);
   }
-  async function getRandomVideo(data) {
+
+  async function getRandomVideo(data, docRef) {
     var randomVideoId = data[getRandomInt(data.length)].snippet.resourceId.videoId;
     var time;
     var response = await axios.get(`https://youtube.googleapis.com/youtube/v3/videos?part=snippet%2CcontentDetails&id=${randomVideoId}&key=${API_KEY}`);
@@ -97,18 +151,34 @@ function App() {
     time = moment.duration(timeString, moment.ISO_8601).asSeconds();
     console.log(time)
     setVideo({ title: title, maxTime: time, videoId: randomVideoId });
+    await updateDoc(docRef, {
+      date: moment().format('MM-DD-YYYY'),
+      title: title,
+      maxTime: time,
+      videoId: randomVideoId
+    });
   }
   return (
-    <div className="App" class="h-screen bg-[#1a2633]">
+    <div className="App" class="h-screen bg-[#1e293b]">
       <div class="text-center min-h-[10%]" >
         <Title />
       </div>
-      <div className="Body" class="flex flex-col items-center space-y-4 min-h-[70%]">
-      <Attempts attemptDetails={attemptDetails} />
-        <iframe id="secretVideo" width="560" height="315" src={`https://www.youtube.com/embed/${video.videoId}?&enablejsapi=1`} title="YouTube video player" frameborder="0" allow="autoplay" allowfullscreen></iframe>
+      <div className="Body" class="flex flex-col items-center space-y-4 min-h-[40%] ">
+        {!gameEnded ?
+          <Attempts attemptDetails={attemptDetails} />
+          :
+          <>
+            <div class="space-y-16">
+              <iframe width="560" height="315" src={`https://www.youtube.com/embed/${video.videoId}?&enablejsapi=1`} title="YouTube video player" frameborder="0" allow="autoplay" allowfullscreen />
+              <Results startTime={startTime} isCorrect={correct} attemptDetails={attemptDetails} count={count} />
+            </div>
+            <Countdown />
+          </>
+        }
+        <iframe id="secretVideo" width="0" height="0" src={`https://www.youtube.com/embed/${video.videoId}?&enablejsapi=1`} title="YouTube video player" frameborder="0" allow="autoplay" allowfullscreen />
       </div>
-      <div className="Game" class="flex flex-col items-center space-y-2">
-        <GameBar duration={duration[count]} songBar={songBar} sectionColors={sectionColors}/>
+      <div className="Game" class="fixed  inset-x-0 bottom-0 min-h-[23%] flex flex-col items-center space-y-4">
+        <GameBar duration={duration[count]} songBar={songBar} sectionColors={sectionColors} />
         <div class="w-2/6 flex flex-row">
           <input type="range" class="w-full" min="0" max={video.maxTime} value={startTime}
             onMouseUp={(e) => { handleSliderRelease(e.target.value) }}
@@ -117,16 +187,25 @@ function App() {
           />
           <p class="text-white">{Math.floor(startTime / 60)}:{startTime % 60 < 10 ? '0' + (startTime % 60) : startTime % 60}</p>
         </div>
-        <PlayButton
+        {
+          !gameEnded ?
+            <>
+              {videoLoaded ?
+                <PlayButton
                   duration={duration[count]}
+                  gameEnded={gameEnded}
                   setSliderDisabled={setSliderDisabled}
                   setSongBar={setSongBar}
                   startTime={startTime}
                 />
-        <div class="w-2/6 flex flex-row">
+                :
+                <Loading />
+              }
+              <div class="w-2/6 flex flex-row">
                 <VolumeDown />
                 <input type="range" class="w-full" min="0" max="100"
                   value={volume}
+                  onMouseUp={(e) => { handleVolume(e.target.value) }}
                   onInput={(e) => { setVolume(e.target.value) }}
                 />
                 <VolumeUp />
@@ -138,14 +217,28 @@ function App() {
                   items.map(item => item.snippet.title)
                 }
               />
-        <div class="w-3/6 flex justify-between">
-          <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded " onClick={handleSkip}>
-            Skip ({skip}s)
-          </button>
-          <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" disabled={false} onClick={handleGuess} >
-            Submit
-          </button>
-        </div>
+              <div class="w-2/6 flex justify-between">
+                <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded disabled:opacity-25 disabled:bg-blue-500"
+                  onClick={handleSkip}
+                >
+                  Skip ({skip}s)
+                </button>
+                <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded disabled:opacity-25 disabled:bg-blue-500"
+                  disabled={input === '' || !items.find((item) => item.snippet.title === input)}
+                  onClick={handleGuess} >
+                  Submit
+                </button>
+              </div>
+            </>
+            :
+            <PlayButton
+              duration={video.maxTime}
+              gameEnded={gameEnded}
+              setSliderDisabled={setSliderDisabled}
+              setSongBar={setSongBar}
+              startTime={startTime}
+            />
+        }
       </div>
     </div>
   );
