@@ -37,7 +37,7 @@ function App() {
   const [sliderDisabled, setSliderDisabled] = useState(false);
   const [items, setItems] = useState([]);
   const [video, setVideo] = useState({ videoId: '', maxTime: 0, title: 'dummyTitle' });
-  const API_KEY = '';
+  const API_KEY = 'AIzaSyAXNMKtBRg03be1hymheUTNFko38clHJ5A';
 
   const answer = "chaewon";
   function moveBar() {
@@ -134,18 +134,9 @@ function App() {
               <Autocomplete
                 userInput={input}
                 setUserInput={setInput}
-                suggestions={[
-                  "Alligator",
-                  "Bask",
-                  "Crocodilian",
-                  "Death Roll",
-                  "Eggs",
-                  "Jaws",
-                  "Reptile",
-                  "Solitary",
-                  "Tail",
-                  "Wetlands"
-                ]}
+                suggestions={
+                  items.map(item => item.snippet.title)
+                }
               />
         <div class="w-3/6 flex justify-between">
           <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded " onClick={handleSkip}>
