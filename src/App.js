@@ -14,12 +14,17 @@ import { getFirestore, collection, query, getDocs, doc, getDoc, updateDoc } from
 import moment from 'moment/moment';
 
 const firebaseConfig = {
- 
+  apiKey: `${process.env.REACT_APP_FIREBASE_API_KEY}`,
+  authDomain: `${process.env.REACT_APP_AUTH_DOMAIN}`,
+  projectId: `${process.env.REACT_APP_PROJECT_ID}`,
+  storageBucket: `${process.env.REACT_APP_STORAGE_BUCKET}`,
+  messagingSenderId: `${process.env.REACT_APP_MESSAGING_SENDER_ID}`,
+  appId: `${process.env.REACT_APP_APP_ID}`,
+  measurementId: `${process.env.REACT_APP_MEASUREMENT_ID}`
 };
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-
 // Gonna move all this crap when we have different pages
 function App() {
   const CURRENT = '#38bdf8';
@@ -33,7 +38,7 @@ function App() {
   const [sliderDisabled, setSliderDisabled] = useState(false);
   const [volume, setVolume] = useState(100);
   const [videoLoaded, setVideoLoaded] = useState(false);
-  const API_KEY = ''
+  const API_KEY = `${process.env.REACT_APP_GOOGLE_API_KEY}`
   const [attemptDetails, setAttemptDetails] = useState(
     [
       { focus: true, value: "", color: "#ffffff" },
