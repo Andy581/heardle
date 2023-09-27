@@ -12,6 +12,7 @@ import { Loading, VolumeDown, VolumeUp } from './components/svg';
 import { initializeApp } from 'firebase/app';
 import { getFirestore, collection, query, getDocs, doc, getDoc, updateDoc } from 'firebase/firestore';
 import moment from 'moment/moment';
+import { CURRENT, PAST, FUTURE, SKIPPED, WRONG, CORRECT, EMPTY_ATTEMPTS } from './constants';
 
 const firebaseConfig = {
   apiKey: `${process.env.REACT_APP_FIREBASE_API_KEY}`,
@@ -27,28 +28,13 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 // Gonna move all this crap when we have different pages
 function App() {
-  const CURRENT = '#38bdf8';
-  const PAST = '#000000';
-  const FUTURE = '#505050';
-  const SKIPPED = '#808080';
-  const WRONG = '#ff0000';
-  const CORRECT = '#008000'
   const [correct, setCorrect] = useState(false);
   const [startTime, setStartTime] = useState(0);
   const [sliderDisabled, setSliderDisabled] = useState(false);
   const [volume, setVolume] = useState(100);
   const [videoLoaded, setVideoLoaded] = useState(false);
   const API_KEY = `${process.env.REACT_APP_GOOGLE_API_KEY}`
-  const [attemptDetails, setAttemptDetails] = useState(
-    [
-      { focus: true, value: "", color: "#ffffff" },
-      { focus: false, value: "", color: "#ffffff" },
-      { focus: false, value: "", color: "#ffffff" },
-      { focus: false, value: "", color: "#ffffff" },
-      { focus: false, value: "", color: "#ffffff" },
-      { focus: false, value: "", color: "#ffffff" },
-    ]
-  )
+  const [attemptDetails, setAttemptDetails] = useState(EMPTY_ATTEMPTS)
   const [input, setInput] = useState('');
   const [count, setCount] = useState(0);
   const [skip, setSkip] = useState(1);
@@ -119,16 +105,9 @@ function App() {
     youtubeEmbedWindow.postMessage(message, '*');
 
   }
+  // need to test this function
   function restartGame() {
-    const blankAttempts = [
-      { focus: true, value: "", color: "#ffffff" },
-      { focus: false, value: "", color: "#ffffff" },
-      { focus: false, value: "", color: "#ffffff" },
-      { focus: false, value: "", color: "#ffffff" },
-      { focus: false, value: "", color: "#ffffff" },
-      { focus: false, value: "", color: "#ffffff" },
-    ];
-    setAttemptDetails(blankAttempts);
+    setAttemptDetails(EMPTY_ATTEMPTS);
     setGameEnded(false);
     setSkip(1);
     setCount(1);
