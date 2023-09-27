@@ -12,9 +12,9 @@ import { Loading } from './components/svg';
 import { initializeApp } from 'firebase/app';
 import { getFirestore, collection, query, getDocs, doc, getDoc, updateDoc } from 'firebase/firestore';
 import moment from 'moment/moment';
-import { getRandomInt, handleSliderRelease } from './common';
-import { CURRENT, PAST, FUTURE, SKIPPED, WRONG, CORRECT, EMPTY_ATTEMPTS } from './constants';
-import Volume from './components/volume';
+import { getRandomInt, isToday} from './common';
+import { CURRENT, PAST, FUTURE, SKIPPED, WRONG, CORRECT, EMPTY_ATTEMPTS, DURATION } from './constants';
+import { StartTimeSlider, VolumeSlider } from './components/sliders';
 
 const firebaseConfig = {
   apiKey: `${process.env.REACT_APP_FIREBASE_API_KEY}`,
@@ -40,22 +40,14 @@ function App() {
   const [input, setInput] = useState('');
   const [count, setCount] = useState(0);
   const [skip, setSkip] = useState(1);
-  const [duration] = useState([1, 2, 4, 7, 11, 16]);
   const [gameEnded, setGameEnded] = useState(false);
-  const [songBar, setSongBar] = useState({ duration: duration[count], width: 0, })
+  const [songBar, setSongBar] = useState({ duration: DURATION[count], width: 0, })
   const [sectionColors, setSectionColors] = useState(
     [CURRENT, FUTURE, FUTURE, FUTURE, FUTURE, FUTURE]
   )
   const [titles, setTitles] = useState([]);
   const [video, setVideo] = useState({ videoId: '', maxTime: 0, title: 'dummyTitle' });
   const [curDay, setCurDay] = useState(new Date().getDate());
-  const isToday = (someDate) => {
-    const today = new Date()
-    someDate = new Date(someDate);
-    return someDate.getDate() === today.getDate() &&
-      someDate.getMonth() === today.getMonth() &&
-      someDate.getFullYear() === today.getFullYear()
-  }
   function movePotentialBar() {
     sectionColors[count] = PAST;
     sectionColors[count + 1] = CURRENT;
@@ -185,21 +177,14 @@ function App() {
         }
       </div>
       <div className="Game" class="fixed  inset-x-0 bottom-0 min-h-[23%] flex flex-col items-center space-y-4">
-        <GameBar duration={duration[count]} songBar={songBar} sectionColors={sectionColors} />
-        <div class="w-2/6 flex flex-row">
-          <input type="range" class="w-full" min="0" max={video.maxTime} value={startTime}
-            onMouseUp={(e) => { handleSliderRelease(e.target.value) }}
-            onInput={(e) => { setStartTime(e.target.value) }}
-            disabled={sliderDisabled}
-          />
-          <p class="text-white">{Math.floor(startTime / 60)}:{startTime % 60 < 10 ? '0' + (startTime % 60) : startTime % 60}</p>
-        </div>
+        <GameBar duration={DURATION[count]} songBar={songBar} sectionColors={sectionColors} />
+        <StartTimeSlider startTime={startTime} setStartTime={setStartTime} sliderDisabled={sliderDisabled} video={video}/>
         {
           !gameEnded ?
             <>
               {videoLoaded ?
                 <PlayButton
-                  duration={duration[count]}
+                  duration={DURATION[count]}
                   gameEnded={gameEnded}
                   setSliderDisabled={setSliderDisabled}
                   setSongBar={setSongBar}
@@ -208,12 +193,8 @@ function App() {
                 :
                 <Loading />
               }
-              <Volume/>
-              <Autocomplete
-                userInput={input}
-                setUserInput={setInput}
-                suggestions={titles}
-              />
+              <VolumeSlider/>
+              <Autocomplete userInput={input} setUserInput={setInput} suggestions={titles}/>
               <div class="w-2/6 flex justify-between">
                 <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded disabled:opacity-25 disabled:bg-blue-500"
                   onClick={handleSkip}

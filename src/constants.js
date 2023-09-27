@@ -12,3 +12,4 @@ export const EMPTY_ATTEMPTS =  [
     { focus: false, value: "", color: "#ffffff" },
     { focus: false, value: "", color: "#ffffff" },
   ]
+export const DURATION = [1, 2, 4, 7, 11, 16];
