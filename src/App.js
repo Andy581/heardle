@@ -120,6 +120,7 @@ function App() {
 
   }
   useEffect(() => { gameStart(); }, [])
+  useEffect(() => {gameStart(); }, [gameEnded])
   const gameStart = async () => {
     const docRef = doc(db, "dailyHeardle", "kpop");
     const docSnap = await getDoc(docRef);
@@ -177,7 +178,7 @@ function App() {
               <iframe width="560" height="315" src={`https://www.youtube.com/embed/${video.videoId}?&enablejsapi=1`} title="YouTube video player" frameborder="0" allow="autoplay" allowfullscreen />
               <Results startTime={startTime} isCorrect={correct} attemptDetails={attemptDetails} count={count} />
             </div>
-            <Countdown />
+            <Countdown setGameEnded={setGameEnded} />
           </>
         }
         <iframe id="secretVideo" width="0" height="0" src={`https://www.youtube.com/embed/${video.videoId}?&enablejsapi=1`} title="YouTube video player" frameborder="0" allow="autoplay" allowfullscreen />

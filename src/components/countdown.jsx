@@ -1,6 +1,6 @@
 import React from "react";
 import { useRef, useEffect, useState } from "react";
-export default function Countdown() {
+export default function Countdown({setGameEnded}) {
     const Ref = useRef(null);
  
     // The state for our timer
@@ -29,6 +29,9 @@ export default function Countdown() {
                 (minutes > 9 ? minutes : '0' + minutes) + ':'
                 + (seconds > 9 ? seconds : '0' + seconds)
             )
+        }
+        else {
+            setGameEnded(false);
         }
     }
  
@@ -64,7 +67,7 @@ export default function Countdown() {
  
     return (
         <div >
-            <h2 class="text-white">{timer}</h2>
+            <h2 class="text-white"> Next song in {timer === '00:00:00' ? '' : timer} </h2>
         </div>
     )
 }
