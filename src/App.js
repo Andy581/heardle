@@ -8,11 +8,13 @@ import Countdown from './components/countdown'
 import axios from 'axios';
 import Autocomplete from './components/autocomplete';
 import Results from './components/results';
-import { Loading, VolumeDown, VolumeUp } from './components/svg';
+import { Loading } from './components/svg';
 import { initializeApp } from 'firebase/app';
 import { getFirestore, collection, query, getDocs, doc, getDoc, updateDoc } from 'firebase/firestore';
 import moment from 'moment/moment';
+import { getRandomInt, handleSliderRelease } from './common';
 import { CURRENT, PAST, FUTURE, SKIPPED, WRONG, CORRECT, EMPTY_ATTEMPTS } from './constants';
+import Volume from './components/volume';
 
 const firebaseConfig = {
   apiKey: `${process.env.REACT_APP_FIREBASE_API_KEY}`,
@@ -32,7 +34,6 @@ function App() {
   const [correct, setCorrect] = useState(false);
   const [startTime, setStartTime] = useState(0);
   const [sliderDisabled, setSliderDisabled] = useState(false);
-  const [volume, setVolume] = useState(100);
   const [videoLoaded, setVideoLoaded] = useState(false);
   const API_KEY = `${process.env.REACT_APP_GOOGLE_API_KEY}`
   const [attemptDetails, setAttemptDetails] = useState(JSON.parse(JSON.stringify(EMPTY_ATTEMPTS)))
@@ -92,21 +93,6 @@ function App() {
       return handleEndGame();
     }
     movePotentialBar();
-  }
-  function getRandomInt(max) { return Math.floor(Math.random() * max); }
-  function handleSliderRelease(value) {
-    var youtubeEmbedWindow = document.getElementById("secretVideo").contentWindow;
-    var data = { event: 'command', func: 'seekTo', args: [value, true] }
-    var message = JSON.stringify(data);
-    youtubeEmbedWindow.postMessage(message, '*');
-    youtubeEmbedWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
-  }
-  function handleVolume(value) {
-    var youtubeEmbedWindow = document.getElementById("secretVideo").contentWindow;
-    var data = { event: 'command', func: 'setVolume', args: [value] }
-    var message = JSON.stringify(data);
-    youtubeEmbedWindow.postMessage(message, '*');
-
   }
   async function restartGame() {
     setCorrect(false);
@@ -222,15 +208,7 @@ function App() {
                 :
                 <Loading />
               }
-              <div class="w-2/6 flex flex-row">
-                <VolumeDown />
-                <input type="range" class="w-full" min="0" max="100"
-                  value={volume}
-                  onMouseUp={(e) => { handleVolume(e.target.value) }}
-                  onInput={(e) => { setVolume(e.target.value) }}
-                />
-                <VolumeUp />
-              </div>
+              <Volume/>
               <Autocomplete
                 userInput={input}
                 setUserInput={setInput}
