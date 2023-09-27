@@ -1,11 +1,11 @@
 import React from "react";
 import { useRef, useEffect, useState } from "react";
-export default function Countdown({setGameEnded}) {
+export default function Countdown({ restartGame }) {
     const Ref = useRef(null);
- 
+
     // The state for our timer
     const [timer, setTimer] = useState('00:00:00');
- 
+
     const getTimeRemaining = (tmr) => {
         const total = tmr - Date.parse(new Date());
         const seconds = Math.floor((total / 1000) % 60);
@@ -15,12 +15,12 @@ export default function Countdown({setGameEnded}) {
             total, hours, minutes, seconds
         };
     }
- 
+
     const startTimer = (e) => {
         let { total, hours, minutes, seconds }
-                    = getTimeRemaining(e);
+            = getTimeRemaining(e);
         if (total >= 0) {
- 
+
             // update the timer
             // check if less than 10 then we need to
             // add '0' at the beginning of the variable
@@ -31,10 +31,10 @@ export default function Countdown({setGameEnded}) {
             )
         }
         else {
-            setGameEnded(false);
-        }
+            restartGame();
+        } 
     }
- 
+
     const clearTimer = (e) => {
         // If you try to remove this line the
         // updating of timer Variable will be
@@ -45,26 +45,26 @@ export default function Countdown({setGameEnded}) {
         }, 1000)
         Ref.current = id;
     }
- 
+
     const getDeadTime = () => {
- 
+
         // This is where you need to adjust if
         // you entend to add more time
         var today = new Date();
         var tomorrow = new Date(today.getFullYear(), today.getMonth(), (new Date(new Date().getTime() + 24 * 60 * 60 * 1000)).getDate());
         return tomorrow;
     }
- 
+
     // We can use useEffect so that when the component
     // mount the timer will start as soon as possible
- 
+
     // We put empty array to act as componentDid
     // mount only
     useEffect(() => {
         clearTimer(getDeadTime());
     }, []);
- 
- 
+
+
     return (
         <div >
             <h2 class="text-white"> Next song in {timer === '00:00:00' ? '' : timer} </h2>

@@ -119,8 +119,25 @@ function App() {
     youtubeEmbedWindow.postMessage(message, '*');
 
   }
+  function restartGame() {
+    const blankAttempts = [
+      { focus: true, value: "", color: "#ffffff" },
+      { focus: false, value: "", color: "#ffffff" },
+      { focus: false, value: "", color: "#ffffff" },
+      { focus: false, value: "", color: "#ffffff" },
+      { focus: false, value: "", color: "#ffffff" },
+      { focus: false, value: "", color: "#ffffff" },
+    ];
+    setAttemptDetails(blankAttempts);
+    setGameEnded(false);
+    setSkip(1);
+    setCount(1);
+    setCorrect(false);
+    setStartTime(0);
+    setSliderDisabled(false);
+    gameStart();
+  }
   useEffect(() => { gameStart(); }, [])
-  useEffect(() => {gameStart(); }, [gameEnded])
   const gameStart = async () => {
     const docRef = doc(db, "dailyHeardle", "kpop");
     const docSnap = await getDoc(docRef);
@@ -178,7 +195,7 @@ function App() {
               <iframe width="560" height="315" src={`https://www.youtube.com/embed/${video.videoId}?&enablejsapi=1`} title="YouTube video player" frameborder="0" allow="autoplay" allowfullscreen />
               <Results startTime={startTime} isCorrect={correct} attemptDetails={attemptDetails} count={count} />
             </div>
-            <Countdown setGameEnded={setGameEnded} />
+            <Countdown restartGame={restartGame}/>
           </>
         }
         <iframe id="secretVideo" width="0" height="0" src={`https://www.youtube.com/embed/${video.videoId}?&enablejsapi=1`} title="YouTube video player" frameborder="0" allow="autoplay" allowfullscreen />
