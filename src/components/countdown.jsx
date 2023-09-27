@@ -31,8 +31,9 @@ export default function Countdown({ restartGame }) {
             )
         }
         else {
+            clearInterval(Ref.current);
             restartGame();
-        } 
+        }
     }
 
     const clearTimer = (e) => {

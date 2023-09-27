@@ -2,7 +2,7 @@ import './App.css';
 import Attempts from './components/attempt';
 import Title from './components/title';
 import GameBar from './components/gameBar';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import PlayButton from './components/playButton';
 import Countdown from './components/countdown'
 import axios from 'axios';
@@ -28,13 +28,14 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 // Gonna move all this crap when we have different pages
 function App() {
+  const Ref = useRef(null);
   const [correct, setCorrect] = useState(false);
   const [startTime, setStartTime] = useState(0);
   const [sliderDisabled, setSliderDisabled] = useState(false);
   const [volume, setVolume] = useState(100);
   const [videoLoaded, setVideoLoaded] = useState(false);
   const API_KEY = `${process.env.REACT_APP_GOOGLE_API_KEY}`
-  const [attemptDetails, setAttemptDetails] = useState(EMPTY_ATTEMPTS)
+  const [attemptDetails, setAttemptDetails] = useState(JSON.parse(JSON.stringify(EMPTY_ATTEMPTS)))
   const [input, setInput] = useState('');
   const [count, setCount] = useState(0);
   const [skip, setSkip] = useState(1);
@@ -44,8 +45,9 @@ function App() {
   const [sectionColors, setSectionColors] = useState(
     [CURRENT, FUTURE, FUTURE, FUTURE, FUTURE, FUTURE]
   )
-  const [items, setItems] = useState([]);
+  const [titles, setTitles] = useState([]);
   const [video, setVideo] = useState({ videoId: '', maxTime: 0, title: 'dummyTitle' });
+  const [curDay, setCurDay] = useState(new Date().getDate());
   const isToday = (someDate) => {
     const today = new Date()
     someDate = new Date(someDate);
@@ -73,6 +75,7 @@ function App() {
     movePotentialBar();
   }
   function handleEndGame() {
+    clearInterval(Ref.current);
     setGameEnded(true);
     setSliderDisabled(true);
   }
@@ -105,29 +108,42 @@ function App() {
     youtubeEmbedWindow.postMessage(message, '*');
 
   }
-  // need to test this function
-  function restartGame() {
-    setAttemptDetails(EMPTY_ATTEMPTS);
-    setGameEnded(false);
-    setSkip(1);
-    setCount(1);
+  async function restartGame() {
     setCorrect(false);
     setStartTime(0);
     setSliderDisabled(false);
-    gameStart();
+    setGameEnded(false);
+    setCount(0);
+    setAttemptDetails(JSON.parse(JSON.stringify(EMPTY_ATTEMPTS)));
+    setSkip(1);
+    setCorrect(false);
+    setCurDay(new Date().getDate());
+    await gameStart();
+  }
+  function checkDay() {
+    if (curDay !== new Date().getDate()) {
+      clearInterval(Ref.current);
+      restartGame();
+    }
   }
   useEffect(() => { gameStart(); }, [])
   const gameStart = async () => {
+    const dayId = setInterval(() => {
+      checkDay();
+    }, 1000);
+    Ref.current = dayId;
     const docRef = doc(db, "dailyHeardle", "kpop");
     const docSnap = await getDoc(docRef);
     const daily = docSnap.data();
     console.log(docSnap.data());
     if (isToday(daily.date)) {
       setVideo({ title: daily.title, maxTime: daily.maxTime, videoId: daily.videoId })
+      setTitles(daily.titles);
     }
     else {
       var pageInfo;
       var nextPageToken = '';
+      var items = [];
       var playlist = await axios.get(`https://youtube.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=PLOHoVaTp8R7dfrJW5pumS0iD_dhlXKv17&key=${API_KEY}`);
       pageInfo = playlist.data.pageInfo;
       var data = items;
@@ -138,7 +154,6 @@ function App() {
         data = data.concat(nextPage.data.items);
         nextPageToken = nextPage.data.nextPageToken;
       }
-      setItems(data);
       getRandomVideo(data, docRef);
     }
     setTimeout(() => setVideoLoaded(true), 1000);
@@ -153,11 +168,13 @@ function App() {
     time = moment.duration(timeString, moment.ISO_8601).asSeconds();
     console.log(time)
     setVideo({ title: title, maxTime: time, videoId: randomVideoId });
+    setTitles(data.map(data => data.snippet.title))
     await updateDoc(docRef, {
       date: moment().format('MM-DD-YYYY'),
       title: title,
       maxTime: time,
-      videoId: randomVideoId
+      videoId: randomVideoId,
+      titles: data.map(data => data.snippet.title)
     });
   }
   return (
@@ -167,17 +184,19 @@ function App() {
       </div>
       <div className="Body" class="flex flex-col items-center space-y-4 min-h-[40%] ">
         {!gameEnded ?
-          <Attempts attemptDetails={attemptDetails} />
+          <>
+            <Attempts attemptDetails={attemptDetails} />
+            <iframe id="secretVideo" width="560" height="310" src={`https://www.youtube.com/embed/${video.videoId}?&enablejsapi=1`} title="YouTube video player" frameborder="0" allow="autoplay" allowfullscreen />
+          </>
           :
           <>
             <div class="space-y-16">
               <iframe width="560" height="315" src={`https://www.youtube.com/embed/${video.videoId}?&enablejsapi=1`} title="YouTube video player" frameborder="0" allow="autoplay" allowfullscreen />
               <Results startTime={startTime} isCorrect={correct} attemptDetails={attemptDetails} count={count} />
             </div>
-            <Countdown restartGame={restartGame}/>
+            <Countdown restartGame={restartGame} />
           </>
         }
-        <iframe id="secretVideo" width="0" height="0" src={`https://www.youtube.com/embed/${video.videoId}?&enablejsapi=1`} title="YouTube video player" frameborder="0" allow="autoplay" allowfullscreen />
       </div>
       <div className="Game" class="fixed  inset-x-0 bottom-0 min-h-[23%] flex flex-col items-center space-y-4">
         <GameBar duration={duration[count]} songBar={songBar} sectionColors={sectionColors} />
@@ -215,9 +234,7 @@ function App() {
               <Autocomplete
                 userInput={input}
                 setUserInput={setInput}
-                suggestions={
-                  items.map(item => item.snippet.title)
-                }
+                suggestions={titles}
               />
               <div class="w-2/6 flex justify-between">
                 <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded disabled:opacity-25 disabled:bg-blue-500"
@@ -226,7 +243,7 @@ function App() {
                   Skip ({skip}s)
                 </button>
                 <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded disabled:opacity-25 disabled:bg-blue-500"
-                  disabled={input === '' || !items.find((item) => item.snippet.title === input)}
+                  disabled={input === '' || !titles.find((title) => title === input)}
                   onClick={handleGuess} >
                   Submit
                 </button>
