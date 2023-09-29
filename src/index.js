@@ -2,13 +2,25 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import reportWebVitals from './reportWebVitals';
+import { UnlimitedHeardle } from './pages/unlimitedHeardle';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <App/>,
+  },
+  // {
+  //   path: "unlimitedHeardle/:genre",
+  //   element: <UnlimitedHeardle/>,
+  // }
+])
 root.render(
   // Remove Strict mode to let components render once (useEffect will render twice with strict mode)
   <React.StrictMode>
-    <App />
+    <RouterProvider router={router}/>
   </React.StrictMode>
 );
 

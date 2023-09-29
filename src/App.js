@@ -31,6 +31,7 @@ const db = getFirestore(app);
 // Gonna move all this crap when we have different pages
 function App() {
   const Ref = useRef(null);
+  const [score, setScore] = useState(0);
   const [correct, setCorrect] = useState(false);
   const [startTime, setStartTime] = useState(0);
   const [sliderDisabled, setSliderDisabled] = useState(false);
@@ -41,7 +42,7 @@ function App() {
   const [count, setCount] = useState(0);
   const [skip, setSkip] = useState(1);
   const [gameEnded, setGameEnded] = useState(false);
-  const [songBar, setSongBar] = useState({ duration: DURATION[count], width: 0, })
+  const [songBar, setSongBar] = useState({ duration: DURATION[count], width: 0, });
   const [sectionColors, setSectionColors] = useState(
     [CURRENT, FUTURE, FUTURE, FUTURE, FUTURE, FUTURE]
   )
@@ -116,7 +117,7 @@ function App() {
     console.log(docSnap.data());
     if (isToday(daily.date)) {
       setVideo({ title: daily.title, maxTime: daily.maxTime, videoId: daily.videoId })
-      setTitles(daily.titles);
+      setTitles(daily.videos.map(video => video.title));
     }
     else {
       var pageInfo;
@@ -152,7 +153,7 @@ function App() {
       title: title,
       maxTime: time,
       videoId: randomVideoId,
-      titles: data.map(data => data.snippet.title)
+      videos: data.map(data => {return {title: data.snippet.title, videoId: data.snippet.resourceId.videoId}})
     });
   }
   return (
