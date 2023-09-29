@@ -9,29 +9,15 @@ import axios from 'axios';
 import Autocomplete from './components/autocomplete';
 import Results from './components/results';
 import { Loading } from './components/svg';
-import { initializeApp } from 'firebase/app';
-import { getFirestore, collection, query, getDocs, doc, getDoc, updateDoc } from 'firebase/firestore';
+import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import moment from 'moment/moment';
 import { getRandomInt, isToday} from './common';
 import { CURRENT, PAST, FUTURE, SKIPPED, WRONG, CORRECT, EMPTY_ATTEMPTS, DURATION } from './constants';
 import { StartTimeSlider, VolumeSlider } from './components/sliders';
 
-const firebaseConfig = {
-  apiKey: `${process.env.REACT_APP_FIREBASE_API_KEY}`,
-  authDomain: `${process.env.REACT_APP_AUTH_DOMAIN}`,
-  projectId: `${process.env.REACT_APP_PROJECT_ID}`,
-  storageBucket: `${process.env.REACT_APP_STORAGE_BUCKET}`,
-  messagingSenderId: `${process.env.REACT_APP_MESSAGING_SENDER_ID}`,
-  appId: `${process.env.REACT_APP_APP_ID}`,
-  measurementId: `${process.env.REACT_APP_MEASUREMENT_ID}`
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
 // Gonna move all this crap when we have different pages
-function App() {
+function App({db}) {
   const Ref = useRef(null);
-  const [score, setScore] = useState(0);
   const [correct, setCorrect] = useState(false);
   const [startTime, setStartTime] = useState(0);
   const [sliderDisabled, setSliderDisabled] = useState(false);

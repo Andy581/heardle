@@ -1,34 +1,20 @@
 import Attempts from '../components/attempt';
 import Title from '../components/title';
 import GameBar from '../components/gameBar';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import PlayButton from '../components/playButton';
-import Countdown from '../components/countdown'
 import axios from 'axios';
 import Autocomplete from '../components/autocomplete';
-import Results from '../components/results';
 import { Loading } from '../components/svg';
-import { initializeApp } from 'firebase/app';
-import { getFirestore, collection, query, getDocs, doc, getDoc, updateDoc } from 'firebase/firestore';
+import { doc, getDoc, } from 'firebase/firestore';
 import moment from 'moment/moment';
-import { getRandomInt, isToday } from '../common';
+import { getRandomInt } from '../common';
 import { CURRENT, PAST, FUTURE, SKIPPED, WRONG, CORRECT, EMPTY_ATTEMPTS, DURATION } from '../constants';
 import { StartTimeSlider, VolumeSlider } from '../components/sliders';
 import { useParams } from 'react-router-dom';
-const firebaseConfig = {
-    apiKey: `${process.env.REACT_APP_FIREBASE_API_KEY}`,
-    authDomain: `${process.env.REACT_APP_AUTH_DOMAIN}`,
-    projectId: `${process.env.REACT_APP_PROJECT_ID}`,
-    storageBucket: `${process.env.REACT_APP_STORAGE_BUCKET}`,
-    messagingSenderId: `${process.env.REACT_APP_MESSAGING_SENDER_ID}`,
-    appId: `${process.env.REACT_APP_APP_ID}`,
-    measurementId: `${process.env.REACT_APP_MEASUREMENT_ID}`
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-export function UnlimitedHeardle() {
+export function UnlimitedHeardle({ db }) {
     const [score, setScore] = useState(0);
+    const [videos, setVideos] = useState([]);
     const [startTime, setStartTime] = useState(0);
     const [sliderDisabled, setSliderDisabled] = useState(false);
     const [videoLoaded, setVideoLoaded] = useState(false);
@@ -43,6 +29,8 @@ export function UnlimitedHeardle() {
     )
     const [titles, setTitles] = useState([]);
     const [video, setVideo] = useState({ videoId: '', maxTime: 0, title: 'dummyTitle' });
+    const [originalVideos, setOriginalVideos] = useState([]);
+    const { genre } = useParams();
     const API_KEY = `${process.env.REACT_APP_GOOGLE_API_KEY}`
     function movePotentialBar() {
         sectionColors[count] = PAST;
@@ -50,7 +38,6 @@ export function UnlimitedHeardle() {
         attemptDetails[count].focus = false;
         attemptDetails[count + 1].focus = true;
         setSectionColors(sectionColors);
-        console.log(count);
         setCount(count + 1);
     }
     function handleSkip() {
@@ -71,39 +58,48 @@ export function UnlimitedHeardle() {
         attemptDetails[count].value = input;
         setInput('');
         if (input === video.title) {
-            setScore(score+1);
+            setScore(score + 1);
+            attemptDetails[count].color = CORRECT;
+            if (score + 1 === originalVideos.length) 
+                return handleEndGame();
             return nextSong();
         }
-        if (count === 5) {
+        attemptDetails[count].color = WRONG;
+        if (count === 5) 
             return handleEndGame();
-        }
         movePotentialBar();
     }
-    function nextSong() {
+    function resetStates() {
         setStartTime(0);
         setSliderDisabled(false);
         setGameEnded(false);
         setCount(0);
         setAttemptDetails(JSON.parse(JSON.stringify(EMPTY_ATTEMPTS)));
         setSkip(1);
+        setVideoLoaded(false);
+    }
+    function nextSong() {
+        resetStates()
+        const newList = videos.filter((vid) => vid.title !== video.title);
+        setVideos(newList);
+        getRandomVideo(newList);
+        setTimeout(() => setVideoLoaded(true), 200)
 
     }
     async function restartGame() {
-        setStartTime(0);
-        setSliderDisabled(false);
-        setGameEnded(false);
-        setCount(0);
-        setAttemptDetails(JSON.parse(JSON.stringify(EMPTY_ATTEMPTS)));
-        setSkip(1);
-        await gameStart();
+        resetStates();
+        setVideos(originalVideos);
+        getRandomVideo(originalVideos)
+        setTimeout(() => setVideoLoaded(true), 1000);
     }
     useEffect(() => { gameStart(); }, [])
     const gameStart = async () => {
         const docRef = doc(db, "dailyHeardle", "kpop");
         const docSnap = await getDoc(docRef);
         const daily = docSnap.data();
-        const videos = daily.videos;
-        getRandomVideo(videos)
+        setVideos(daily.videos);
+        setOriginalVideos(daily.videos);
+        getRandomVideo(daily.videos)
         setTimeout(() => setVideoLoaded(true), 1000);
     }
 
@@ -118,23 +114,36 @@ export function UnlimitedHeardle() {
     }
     return (
         <div className="App" class="h-screen bg-[#1e293b]">
-            <div class="text-center min-h-[10%]" >
+            <div class="text-center min-h-[10%] text-white" >
                 <Title />
             </div>
             <div className="Body" class="flex flex-col items-center space-y-4 min-h-[40%] ">
                 {!gameEnded ?
                     <>
+                        <p class="text-white">
+                            Score {score} / {originalVideos.length}
+                        </p>
                         <Attempts attemptDetails={attemptDetails} />
                         <iframe id="secretVideo" width="560" height="310" src={`https://www.youtube.com/embed/${video.videoId}?&enablejsapi=1`} title="YouTube video player" frameborder="0" allow="autoplay" allowfullscreen />
                     </>
                     :
                     <>
-                        <div class="space-y-16">
+                        <div class="space-y-4 flex flex-col items-center">
                             <iframe width="560" height="315" src={`https://www.youtube.com/embed/${video.videoId}?&enablejsapi=1`} title="YouTube video player" frameborder="0" allow="autoplay" allowfullscreen />
-                            {/* TODO: Need to create a new results page */}
-                            {/* <Results startTime={startTime} isCorrect={correct} attemptDetails={attemptDetails} count={count} /> */} 
+                            <p class="text-white">
+                                Score: {score}
+                            </p>
+                            <div class="flex flex-row justify-center space-x-1">
+                                {attemptDetails.map((detail) => {
+                                    return (
+                                        <div style={{ backgroundColor: detail.color }} class="h-1 w-4" />
+                                    )
+                                })}
+                            </div>
+                            <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded " onClick={restartGame}>
+                                Restart Game
+                            </button>
                         </div>
-                        <Countdown restartGame={restartGame} />
                     </>
                 }
             </div>
