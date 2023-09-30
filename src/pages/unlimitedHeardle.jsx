@@ -12,6 +12,7 @@ import { getRandomInt } from '../common';
 import { CURRENT, PAST, FUTURE, SKIPPED, WRONG, CORRECT, EMPTY_ATTEMPTS, DURATION } from '../constants';
 import { StartTimeSlider, VolumeSlider } from '../components/sliders';
 import { useParams } from 'react-router-dom';
+import { Sidebar } from '../components/sidebar';
 export function UnlimitedHeardle({ db }) {
     const [score, setScore] = useState(0);
     const [videos, setVideos] = useState([]);
@@ -114,6 +115,7 @@ export function UnlimitedHeardle({ db }) {
     }
     return (
         <div className="App" class="h-screen bg-[#1e293b]">
+            <Sidebar/>
             <div class="text-center min-h-[10%] text-white" >
                 <Title />
             </div>

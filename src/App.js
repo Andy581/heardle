@@ -11,12 +11,13 @@ import Results from './components/results';
 import { Loading } from './components/svg';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import moment from 'moment/moment';
-import { getRandomInt, isToday} from './common';
+import { getRandomInt, isToday } from './common';
 import { CURRENT, PAST, FUTURE, SKIPPED, WRONG, CORRECT, EMPTY_ATTEMPTS, DURATION } from './constants';
 import { StartTimeSlider, VolumeSlider } from './components/sliders';
+import { Sidebar } from './components/sidebar';
 
 // Gonna move all this crap when we have different pages
-function App({db}) {
+function App({ db }) {
   const Ref = useRef(null);
   const [correct, setCorrect] = useState(false);
   const [startTime, setStartTime] = useState(0);
@@ -35,6 +36,8 @@ function App({db}) {
   const [titles, setTitles] = useState([]);
   const [video, setVideo] = useState({ videoId: '', maxTime: 0, title: 'dummyTitle' });
   const [curDay, setCurDay] = useState(new Date().getDate());
+  const [navWidth, setNavWidth] = useState(0);
+  const [isNavOpen, setIsNavOpen] = useState(false);
   function movePotentialBar() {
     sectionColors[count] = PAST;
     sectionColors[count + 1] = CURRENT;
@@ -139,11 +142,12 @@ function App({db}) {
       title: title,
       maxTime: time,
       videoId: randomVideoId,
-      videos: data.map(data => {return {title: data.snippet.title, videoId: data.snippet.resourceId.videoId}})
+      videos: data.map(data => { return { title: data.snippet.title, videoId: data.snippet.resourceId.videoId } })
     });
   }
   return (
-    <div className="App" class="h-screen bg-[#1e293b]">
+    <div className="App" class="h-screen bg-[#1e293b] ">
+        <Sidebar/>
       <div class="text-center min-h-[10%]" >
         <Title />
       </div>
@@ -165,7 +169,7 @@ function App({db}) {
       </div>
       <div className="Game" class="fixed  inset-x-0 bottom-0 min-h-[23%] flex flex-col items-center space-y-4">
         <GameBar duration={DURATION[count]} songBar={songBar} sectionColors={sectionColors} />
-        <StartTimeSlider startTime={startTime} setStartTime={setStartTime} sliderDisabled={sliderDisabled} video={video}/>
+        <StartTimeSlider startTime={startTime} setStartTime={setStartTime} sliderDisabled={sliderDisabled} video={video} />
         {
           !gameEnded ?
             <>
@@ -180,8 +184,8 @@ function App({db}) {
                 :
                 <Loading />
               }
-              <VolumeSlider/>
-              <Autocomplete userInput={input} setUserInput={setInput} suggestions={titles}/>
+              <VolumeSlider />
+              <Autocomplete userInput={input} setUserInput={setInput} suggestions={titles} />
               <div class="w-2/6 flex justify-between">
                 <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded disabled:opacity-25 disabled:bg-blue-500"
                   onClick={handleSkip}

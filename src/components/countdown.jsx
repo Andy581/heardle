@@ -52,7 +52,8 @@ export default function Countdown({ restartGame }) {
         // This is where you need to adjust if
         // you entend to add more time
         var today = new Date();
-        var tomorrow = new Date(today.getFullYear(), today.getMonth(), (new Date(new Date().getTime() + 24 * 60 * 60 * 1000)).getDate());
+        // var tomorrow = new Date(today.getFullYear(), today.getMonth(), (new Date(new Date().getTime() + 24 * 60 * 60 * 1000)).getDate());
+        var tomorrow = today.setHours(24,0,0,0)
         return tomorrow;
     }
 
