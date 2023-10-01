@@ -22,7 +22,7 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const router = createBrowserRouter([
   {
-    path: "/",
+    path: "/daily/:genre",
     element: <App db={db}/>,
   },
   {

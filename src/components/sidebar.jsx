@@ -31,7 +31,7 @@ export function Sidebar() {
                             Daily Heardle
                             <ul>
                                 <li>
-                                    <a href='/' class="pl-6">- kpop </a>
+                                    <a href='/daily/kpop' class="pl-6">- kpop </a>
                                 </li>
                             </ul>
                         </li>

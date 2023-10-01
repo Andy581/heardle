@@ -13,3 +13,6 @@ export const EMPTY_ATTEMPTS =  [
     { focus: false, value: "", color: "#ffffff" },
   ]
 export const DURATION = [1, 2, 4, 7, 11, 16];
+export const GENRES = {
+  "kpop" : "PLOHoVaTp8R7dfrJW5pumS0iD_dhlXKv17"
+}

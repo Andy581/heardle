@@ -3,6 +3,7 @@ import Attempts from './components/attempt';
 import Title from './components/title';
 import GameBar from './components/gameBar';
 import { useState, useEffect, useRef } from 'react';
+import { useParams } from 'react-router-dom';
 import PlayButton from './components/playButton';
 import Countdown from './components/countdown'
 import axios from 'axios';
@@ -12,9 +13,10 @@ import { Loading } from './components/svg';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import moment from 'moment/moment';
 import { getRandomInt, isToday } from './common';
-import { CURRENT, PAST, FUTURE, SKIPPED, WRONG, CORRECT, EMPTY_ATTEMPTS, DURATION } from './constants';
+import { CURRENT, PAST, FUTURE, SKIPPED, WRONG, CORRECT, EMPTY_ATTEMPTS, DURATION} from './constants';
 import { StartTimeSlider, VolumeSlider } from './components/sliders';
 import { Sidebar } from './components/sidebar';
+import { useCookies } from 'react-cookie';
 
 // Gonna move all this crap when we have different pages
 function App({ db }) {
@@ -36,8 +38,8 @@ function App({ db }) {
   const [titles, setTitles] = useState([]);
   const [video, setVideo] = useState({ videoId: '', maxTime: 0, title: 'dummyTitle' });
   const [curDay, setCurDay] = useState(new Date().getDate());
-  const [navWidth, setNavWidth] = useState(0);
-  const [isNavOpen, setIsNavOpen] = useState(false);
+  const [cookies, setCookies] = useCookies(['user']);
+  const { genre } = useParams();
   function movePotentialBar() {
     sectionColors[count] = PAST;
     sectionColors[count + 1] = CURRENT;
@@ -58,6 +60,8 @@ function App({ db }) {
     movePotentialBar();
   }
   function handleEndGame() {
+    setCookies('done', true, {expires: new Date(new Date().setHours(24,0,0,0)), path: `/daily/${genre}`})
+    setCookies('colors', attemptDetails.map((attempt) => attempt.color), {expires: new Date(new Date().setHours(24,0,0,0)), path: '/daily/kpop'})
     clearInterval(Ref.current);
     setGameEnded(true);
     setSliderDisabled(true);
@@ -96,11 +100,18 @@ function App({ db }) {
   }
   useEffect(() => { gameStart(); }, [])
   const gameStart = async () => {
+    if(cookies.done) {
+      for (let i = 0; i < 6; i++) {
+        attemptDetails[i].color = cookies.colors[i];
+      }
+      setAttemptDetails(attemptDetails);
+      setGameEnded(true);
+    }
     const dayId = setInterval(() => {
       checkDay();
     }, 1000);
     Ref.current = dayId;
-    const docRef = doc(db, "dailyHeardle", "kpop");
+    const docRef = doc(db, "dailyHeardle", genre);
     const docSnap = await getDoc(docRef);
     const daily = docSnap.data();
     console.log(docSnap.data());
@@ -148,7 +159,7 @@ function App({ db }) {
   return (
     <div className="App" class="h-screen bg-[#1e293b] ">
         <Sidebar/>
-      <div class="text-center min-h-[10%]" >
+      <div class="text-center min-h-[5%]" >
         <Title />
       </div>
       <div className="Body" class="flex flex-col items-center space-y-4 min-h-[40%] ">

@@ -1,9 +1,19 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useState } from "react";
 import { VolumeDown, VolumeUp } from "./svg"
+import { useCookies } from "react-cookie";
 export function VolumeSlider() {
     const [volume, setVolume] = useState(100);
+    const [cookies, setCookies] = useCookies(['user'])
+    useEffect(() => {
+      if (cookies.volume) {
+        setVolume(cookies.volume)
+        handleVolume(cookies.volume)
+      }
+    }, [])
     function handleVolume(value) {
+        setVolume(value)
+        setCookies('volume', value, {expires: new Date(new Date().setFullYear(new Date().getFullYear() + 1 )), path: '/'})
         var youtubeEmbedWindow = document.getElementById("secretVideo").contentWindow;
         var data = { event: 'command', func: 'setVolume', args: [value] }
         var message = JSON.stringify(data);
