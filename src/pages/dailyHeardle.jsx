@@ -1,25 +1,23 @@
-import './App.css';
-import Attempts from './components/attempt';
-import Title from './components/title';
-import GameBar from './components/gameBar';
+import Attempts from '../components/attempt';
+import Title from '../components/title';
+import GameBar from '../components/gameBar';
 import { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
-import PlayButton from './components/playButton';
-import Countdown from './components/countdown'
+import PlayButton from '../components/playButton';
+import Countdown from '../components/countdown'
 import axios from 'axios';
-import Autocomplete from './components/autocomplete';
-import Results from './components/results';
-import { Loading } from './components/svg';
+import Autocomplete from '../components/autocomplete';
+import Results from '../components/results';
+import { Loading } from '../components/svg';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import moment from 'moment/moment';
-import { getRandomInt, isToday } from './common';
-import { CURRENT, PAST, FUTURE, SKIPPED, WRONG, CORRECT, EMPTY_ATTEMPTS, DURATION, PLAYLIST_ID} from './constants';
-import { StartTimeSlider, VolumeSlider } from './components/sliders';
-import { Sidebar } from './components/sidebar';
+import { getRandomInt, isToday } from '../common';
+import { CURRENT, PAST, FUTURE, SKIPPED, WRONG, CORRECT, EMPTY_ATTEMPTS, DURATION, PLAYLIST_ID} from '../constants';
+import { StartTimeSlider, VolumeSlider } from '../components/sliders';
+import { Sidebar } from '../components/sidebar';
 import { useCookies } from 'react-cookie';
 
-// Gonna move all this crap when we have different pages
-function App({ db }) {
+export function DailyHeardle({ db }) {
   const Ref = useRef(null);
   const [correct, setCorrect] = useState(false);
   const [startTime, setStartTime] = useState(0);
@@ -172,7 +170,7 @@ function App({ db }) {
     });
   }
   return (
-    <div className="App" class="h-screen bg-[#1e293b] ">
+    <div class="h-screen bg-[#1e293b] ">
         <Sidebar/>
       <div class="text-center min-h-[5%]" >
         <Title />
@@ -239,4 +237,3 @@ function App({ db }) {
   );
 }
 
-export default App;

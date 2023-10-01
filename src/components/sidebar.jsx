@@ -25,6 +25,11 @@ export function Sidebar() {
                                 <li>
                                     <a href='/unlimitedHeardle/kpop' class="pl-6">- kpop</a>
                                 </li>
+                                <li>
+                                    <a href='/unlimitedHeardle/taylorSwift' class="pl-6">
+                                        - Taylor Swift
+                                    </a>
+                                </li>
                             </ul>
                         </li>
                         <li>
@@ -32,6 +37,9 @@ export function Sidebar() {
                             <ul>
                                 <li>
                                     <a href='/daily/kpop' class="pl-6">- kpop </a>
+                                </li>
+                                <li>
+                                    <a href='/daily/taylorSwift' class="pl-6">- Taylor Swift </a>
                                 </li>
                             </ul>
                         </li>

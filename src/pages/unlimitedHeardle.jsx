@@ -95,7 +95,7 @@ export function UnlimitedHeardle({ db }) {
     }
     useEffect(() => { gameStart(); }, [])
     const gameStart = async () => {
-        const docRef = doc(db, "dailyHeardle", "kpop");
+        const docRef = doc(db, "dailyHeardle", genre);
         const docSnap = await getDoc(docRef);
         const daily = docSnap.data();
         setVideos(daily.videos);

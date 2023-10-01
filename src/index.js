@@ -5,6 +5,7 @@ import App from './App';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import reportWebVitals from './reportWebVitals';
 import { UnlimitedHeardle } from './pages/unlimitedHeardle';
+import { DailyHeardle } from './pages/dailyHeardle';
 import { getFirestore } from 'firebase/firestore';
 import { initializeApp } from 'firebase/app';
 
@@ -23,7 +24,7 @@ const db = getFirestore(app);
 const router = createBrowserRouter([
   {
     path: "/daily/:genre",
-    element: <App db={db}/>,
+    element: <DailyHeardle db={db}/>,
   },
   {
     path: "unlimitedHeardle/:genre",
