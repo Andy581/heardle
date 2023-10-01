@@ -8,6 +8,7 @@ import { UnlimitedHeardle } from './pages/unlimitedHeardle';
 import { DailyHeardle } from './pages/dailyHeardle';
 import { getFirestore } from 'firebase/firestore';
 import { initializeApp } from 'firebase/app';
+import { CustomPlaylist } from './pages/customPlaylist';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 const firebaseConfig = {
@@ -23,12 +24,20 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const router = createBrowserRouter([
   {
+    path: "/",
+    element: <App/>
+  },
+  {
     path: "/daily/:genre",
     element: <DailyHeardle db={db}/>,
   },
   {
     path: "unlimitedHeardle/:genre",
     element: <UnlimitedHeardle db={db}/>,
+  },
+  {
+    path: "/customPlaylist",
+    element: <CustomPlaylist db={db}/>
   }
 ])
 root.render(
