@@ -17,3 +17,4 @@ export const PLAYLIST_ID = {
   "kpop" : "PLOHoVaTp8R7dfrJW5pumS0iD_dhlXKv17",
   'taylorSwift' : 'PL8Mmb1wo4Vy4bc82bDoamglh2ey9YTm4J'
 }
+export const API_KEY = `${process.env.REACT_APP_GOOGLE_API_KEY}`

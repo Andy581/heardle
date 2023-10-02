@@ -9,7 +9,7 @@ import { Loading } from '../components/svg';
 import { doc, getDoc, } from 'firebase/firestore';
 import moment from 'moment/moment';
 import { getRandomInt } from '../common';
-import { CURRENT, PAST, FUTURE, SKIPPED, WRONG, CORRECT, EMPTY_ATTEMPTS, DURATION } from '../constants';
+import { API_KEY, CURRENT, PAST, FUTURE, SKIPPED, WRONG, CORRECT, EMPTY_ATTEMPTS, DURATION } from '../constants';
 import { StartTimeSlider, VolumeSlider } from '../components/sliders';
 import { useParams } from 'react-router-dom';
 import { Sidebar } from '../components/sidebar';
@@ -32,12 +32,12 @@ export function UnlimitedHeardle({ db }) {
     const [video, setVideo] = useState({ videoId: '', maxTime: 0, title: 'dummyTitle' });
     const [originalVideos, setOriginalVideos] = useState([]);
     const { genre } = useParams();
-    const API_KEY = `${process.env.REACT_APP_GOOGLE_API_KEY}`
     function movePotentialBar() {
         sectionColors[count] = PAST;
         sectionColors[count + 1] = CURRENT;
         attemptDetails[count].focus = false;
         attemptDetails[count + 1].focus = true;
+        setAttemptDetails(attemptDetails);
         setSectionColors(sectionColors);
         setCount(count + 1);
         setSkip(skip + 1);
@@ -127,7 +127,7 @@ export function UnlimitedHeardle({ db }) {
                             Score {score} / {originalVideos.length}
                         </p>
                         <Attempts attemptDetails={attemptDetails} />
-                        <iframe id="secretVideo" width="560" height="310" src={`https://www.youtube.com/embed/${video.videoId}?&enablejsapi=1`} title="YouTube video player" frameborder="0" allow="autoplay" allowfullscreen />
+                        <iframe id="secretVideo" width="0" height="0" src={`https://www.youtube.com/embed/${video.videoId}?&enablejsapi=1`} title="YouTube video player" frameborder="0" allow="autoplay" allowfullscreen />
                     </>
                     :
                     <>

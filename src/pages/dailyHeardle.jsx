@@ -12,7 +12,7 @@ import { Loading } from '../components/svg';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import moment from 'moment/moment';
 import { getRandomInt, isToday } from '../common';
-import { CURRENT, PAST, FUTURE, SKIPPED, WRONG, CORRECT, EMPTY_ATTEMPTS, DURATION, PLAYLIST_ID} from '../constants';
+import { API_KEY, CURRENT, PAST, FUTURE, SKIPPED, WRONG, CORRECT, EMPTY_ATTEMPTS, DURATION, PLAYLIST_ID } from '../constants';
 import { StartTimeSlider, VolumeSlider } from '../components/sliders';
 import { Sidebar } from '../components/sidebar';
 import { useCookies } from 'react-cookie';
@@ -23,7 +23,6 @@ export function DailyHeardle({ db }) {
   const [startTime, setStartTime] = useState(0);
   const [sliderDisabled, setSliderDisabled] = useState(false);
   const [videoLoaded, setVideoLoaded] = useState(false);
-  const API_KEY = `${process.env.REACT_APP_GOOGLE_API_KEY}`
   const [attemptDetails, setAttemptDetails] = useState(JSON.parse(JSON.stringify(EMPTY_ATTEMPTS)))
   const [input, setInput] = useState('');
   const [count, setCount] = useState(0);
@@ -135,10 +134,9 @@ export function DailyHeardle({ db }) {
     else {
       var pageInfo;
       var nextPageToken = '';
-      var items = [];
       var playlist = await axios.get(`https://youtube.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=${PLAYLIST_ID[genre]}&key=${API_KEY}`);
       pageInfo = playlist.data.pageInfo;
-      var data = items;
+      var data = []
       data = data.concat(playlist.data.items);
       nextPageToken = playlist.data.nextPageToken;
       console.log("page info ", pageInfo.totalResults)
@@ -179,7 +177,7 @@ export function DailyHeardle({ db }) {
         {!gameEnded ?
           <>
             <Attempts attemptDetails={attemptDetails} />
-            <iframe id="secretVideo" width="560" height="310" src={`https://www.youtube.com/embed/${video.videoId}?&enablejsapi=1`} title="YouTube video player" frameborder="0" allow="autoplay" allowfullscreen />
+            <iframe id="secretVideo" width="0" height="0" src={`https://www.youtube.com/embed/${video.videoId}?&enablejsapi=1`} title="YouTube video player" frameborder="0" allow="autoplay" allowfullscreen />
           </>
           :
           <>

@@ -17,7 +17,7 @@ export function Sidebar() {
                 <button type="submit" style={{ marginLeft: navWidth }} class="transition-all duration-50 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded " onClick={toggleNav}>
                     ☰
                 </button>
-                <div style={{ width: navWidth }} class="h-screen fixed z-10 text-white  bg-[#121b2e] overflow-x-hidden pt-1 transition-all duration-50">
+                <div style={{ width: navWidth }} class="h-screen rounded-lg  fixed z-10 text-white  bg-[#121b2e] overflow-x-hidden pt-1 transition-all duration-50">
                     <ul>
                         <li>
                             Unlimited Heardle
@@ -44,7 +44,7 @@ export function Sidebar() {
                             </ul>
                         </li>
                         <li>
-                            Custom Playlist (**COMING SOON)
+                            Custom Playlist
                         </li>
                     </ul>
                 </div>
