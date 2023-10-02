@@ -40,9 +40,9 @@ export function UnlimitedHeardle({ db }) {
         attemptDetails[count + 1].focus = true;
         setSectionColors(sectionColors);
         setCount(count + 1);
+        setSkip(skip + 1);
     }
     function handleSkip() {
-        setSkip(skip + 1);
         attemptDetails[count].value = "Skipped";
         attemptDetails[count].color = SKIPPED;
         setAttemptDetails(attemptDetails);
@@ -56,6 +56,7 @@ export function UnlimitedHeardle({ db }) {
         setSliderDisabled(true);
     }
     function handleGuess() {
+        if (!sliderDisabled) setSliderDisabled(true);
         attemptDetails[count].value = input;
         setInput('');
         if (input === video.title) {
