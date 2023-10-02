@@ -20,6 +20,17 @@ export function Sidebar() {
                 <div style={{ width: navWidth }} class="h-screen rounded-lg  fixed z-10 text-white  bg-[#121b2e] overflow-x-hidden pt-1 transition-all duration-50">
                     <ul>
                         <li>
+                            Daily Heardle
+                            <ul>
+                                <li>
+                                    <a href='/daily/kpop' class="pl-6">- kpop </a>
+                                </li>
+                                <li>
+                                    <a href='/daily/taylorSwift' class="pl-6">- Taylor Swift </a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li>
                             Unlimited Heardle
                             <ul>
                                 <li>
@@ -33,18 +44,7 @@ export function Sidebar() {
                             </ul>
                         </li>
                         <li>
-                            Daily Heardle
-                            <ul>
-                                <li>
-                                    <a href='/daily/kpop' class="pl-6">- kpop </a>
-                                </li>
-                                <li>
-                                    <a href='/daily/taylorSwift' class="pl-6">- Taylor Swift </a>
-                                </li>
-                            </ul>
-                        </li>
-                        <li>
-                            Custom Playlist
+                            <a href='/customPlaylist'>Custom Playlist </a>
                         </li>
                     </ul>
                 </div>
