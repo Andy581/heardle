@@ -4,7 +4,7 @@ export function Sidebar() {
     const [isNavOpen, setIsNavOpen] = useState(false);
     const [navWidth, setNavWidth] = useState("0");
     function toggleNav() {
-        if (isNavOpen) {
+        if (!isNavOpen) {
             setNavWidth("250px")
         }
         else {
