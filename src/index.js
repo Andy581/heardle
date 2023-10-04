@@ -4,18 +4,15 @@ import './index.css';
 import App from './App';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import reportWebVitals from './reportWebVitals';
-import TagManager from 'react-gtm-module';
 import { UnlimitedHeardle } from './pages/unlimitedHeardle';
 import { DailyHeardle } from './pages/dailyHeardle';
 import { getFirestore } from 'firebase/firestore';
 import { initializeApp } from 'firebase/app';
 import { CustomPlaylist } from './pages/customPlaylist';
 import { G_TAG } from './constants';
+import ReactGA from "react-ga4";
 
-const tagManagerArgs = {
-  gtmId: `${process.env.REACT_APP_G_TAG}`
-}
-TagManager.initialize(tagManagerArgs);
+ReactGA.initialize(G_TAG);
 const root = ReactDOM.createRoot(document.getElementById('root'));
 const firebaseConfig = {
     apiKey: `${process.env.REACT_APP_FIREBASE_API_KEY}`,
