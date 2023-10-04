@@ -13,6 +13,7 @@ import { API_KEY, CURRENT, PAST, FUTURE, SKIPPED, WRONG, CORRECT, EMPTY_ATTEMPTS
 import { StartTimeSlider, VolumeSlider } from '../components/sliders';
 import { useParams } from 'react-router-dom';
 import { Sidebar } from '../components/sidebar';
+import { useCookies } from 'react-cookie';
 export function UnlimitedHeardle({ db }) {
     const [score, setScore] = useState(0);
     const [videos, setVideos] = useState([]);
@@ -29,8 +30,10 @@ export function UnlimitedHeardle({ db }) {
         [CURRENT, FUTURE, FUTURE, FUTURE, FUTURE, FUTURE]
     )
     const [titles, setTitles] = useState([]);
+    const [cookies, setCookies] = useCookies(['user']);
     const [video, setVideo] = useState({ videoId: '', maxTime: 0, title: 'dummyTitle' });
     const [originalVideos, setOriginalVideos] = useState([]);
+    const [volume, setVolume] = useState(100);
     const { genre } = useParams();
     function movePotentialBar() {
         sectionColors[count] = PAST;
@@ -62,12 +65,12 @@ export function UnlimitedHeardle({ db }) {
         if (input === video.title) {
             setScore(score + 1);
             attemptDetails[count].color = CORRECT;
-            if (score + 1 === originalVideos.length) 
+            if (score + 1 === originalVideos.length)
                 return handleEndGame();
             return nextSong();
         }
         attemptDetails[count].color = WRONG;
-        if (count === 5) 
+        if (count === 5)
             return handleEndGame();
         movePotentialBar();
     }
@@ -107,6 +110,13 @@ export function UnlimitedHeardle({ db }) {
         setTimeout(() => setVideoLoaded(true), 1000);
     }
 
+    function handleVolume() {
+        var youtubeEmbedWindow = document.getElementById("secretVideo").contentWindow;
+        var data = { event: 'command', func: 'setVolume', args: [volume] }
+        var message = JSON.stringify(data);
+        youtubeEmbedWindow.postMessage(message, '*');
+    }
+
     async function getRandomVideo(videos) {
         var randomVideo = videos[getRandomInt(videos.length)];
         var time;
@@ -118,7 +128,7 @@ export function UnlimitedHeardle({ db }) {
     }
     return (
         <div className="App" class="h-screen bg-[#1e293b]">
-            <Sidebar/>
+            <Sidebar />
             <div class="text-center min-h-[10%] text-white" >
                 <Title />
             </div>
@@ -129,7 +139,7 @@ export function UnlimitedHeardle({ db }) {
                             Score {score} / {originalVideos.length}
                         </p>
                         <Attempts attemptDetails={attemptDetails} />
-                        <iframe id="secretVideo" width="0" height="0" src={`https://www.youtube.com/embed/${video.videoId}?&enablejsapi=1`} title="YouTube video player" frameborder="0" allow="autoplay" allowfullscreen />
+                        <iframe id="secretVideo" width="560" height="315" src={`https://www.youtube.com/embed/${video.videoId}?&enablejsapi=1`} title="YouTube video player" frameborder="0" allow="autoplay" allowfullscreen onLoad={handleVolume}/>
                     </>
                     :
                     <>
@@ -169,7 +179,7 @@ export function UnlimitedHeardle({ db }) {
                                 :
                                 <Loading />
                             }
-                            <VolumeSlider />
+                            <VolumeSlider volume={volume} setVolume={setVolume}/>
                             <Autocomplete userInput={input} setUserInput={setInput} suggestions={titles} />
                             <div class="w-2/6 flex justify-between">
                                 <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded disabled:opacity-25 disabled:bg-blue-500"

@@ -2,8 +2,7 @@ import React, { useEffect } from "react";
 import { useState } from "react";
 import { VolumeDown, VolumeUp } from "./svg"
 import { useCookies } from "react-cookie";
-export function VolumeSlider() {
-    const [volume, setVolume] = useState(100);
+export function VolumeSlider({volume, setVolume}) {
     const [cookies, setCookies] = useCookies(['user'])
     useEffect(() => {
       if (cookies.volume) {

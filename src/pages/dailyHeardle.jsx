@@ -36,6 +36,7 @@ export function DailyHeardle({ db }) {
   const [video, setVideo] = useState({ videoId: '', maxTime: 0, title: 'dummyTitle' });
   const [curDay, setCurDay] = useState(new Date().getDate());
   const [cookies, setCookies] = useCookies(['user']);
+  const [volume, setVolume] = useState(100);
   const { genre } = useParams();
   function movePotentialBar() {
     sectionColors[count] = PAST;
@@ -208,7 +209,7 @@ export function DailyHeardle({ db }) {
                 :
                 <Loading />
               }
-              <VolumeSlider />
+              <VolumeSlider volume={volume} setVolume={setVolume}/>
               <Autocomplete userInput={input} setUserInput={setInput} suggestions={titles} />
               <div class="w-2/6 flex justify-between">
                 <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded disabled:opacity-25 disabled:bg-blue-500"
