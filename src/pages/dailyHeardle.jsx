@@ -16,6 +16,7 @@ import { API_KEY, CURRENT, PAST, FUTURE, SKIPPED, WRONG, CORRECT, EMPTY_ATTEMPTS
 import { StartTimeSlider, VolumeSlider } from '../components/sliders';
 import { Sidebar } from '../components/sidebar';
 import { useCookies } from 'react-cookie';
+import {v4 as uuidv4} from 'uuid';
 
 export function DailyHeardle({ db }) {
   const Ref = useRef(null);
@@ -112,6 +113,12 @@ export function DailyHeardle({ db }) {
   }
   useEffect(() => { gameStart(); }, [])
   const gameStart = async () => {
+    if (!cookies.uuid) {
+      const uuid = uuidv4();
+      setCookies('uuid', uuid, { expires: new Date(new Date().setFullYear(2024)), path: '/' })
+      const docRef = doc(db, "users", "uuids");
+      await updateDoc(docRef, { uuid: uuid })
+    }
     if (cookies.states) {
       setAttemptDetails(cookies.states.attemptDetails);
       setStartTime(cookies.states.startTime);

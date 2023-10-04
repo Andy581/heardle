@@ -6,7 +6,7 @@ import PlayButton from '../components/playButton';
 import axios from 'axios';
 import Autocomplete from '../components/autocomplete';
 import { Loading } from '../components/svg';
-import { doc, getDoc, } from 'firebase/firestore';
+import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import moment from 'moment/moment';
 import { getRandomInt } from '../common';
 import { API_KEY, CURRENT, PAST, FUTURE, SKIPPED, WRONG, CORRECT, EMPTY_ATTEMPTS, DURATION } from '../constants';
@@ -14,6 +14,7 @@ import { StartTimeSlider, VolumeSlider } from '../components/sliders';
 import { useParams } from 'react-router-dom';
 import { Sidebar } from '../components/sidebar';
 import { useCookies } from 'react-cookie';
+import {v4 as uuidv4 } from 'uuid';
 export function UnlimitedHeardle({ db }) {
     const [score, setScore] = useState(0);
     const [videos, setVideos] = useState([]);
@@ -101,6 +102,12 @@ export function UnlimitedHeardle({ db }) {
     }
     useEffect(() => { gameStart(); }, [])
     const gameStart = async () => {
+        if (!cookies.uuid) {
+            const uuid = uuidv4();
+            setCookies('uuid', uuid, { expires: new Date(new Date().setFullYear(2024)), path: '/' })
+            const docRef = doc(db, "users", "uuids");
+            await updateDoc(docRef, { uuid: uuid })
+          }
         const docRef = doc(db, "dailyHeardle", genre);
         const docSnap = await getDoc(docRef);
         const daily = docSnap.data();

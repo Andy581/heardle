@@ -28,11 +28,11 @@ const db = getFirestore(app);
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <App/>
+    element: <App db={db}/>
   },
   {
     path: "/daily/:genre",
-    element: <DailyHeardle db={db}/>,
+    element: <DailyHeardle db={db}/>
   },
   {
     path: "unlimitedHeardle/:genre",
