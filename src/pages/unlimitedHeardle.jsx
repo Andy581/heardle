@@ -89,13 +89,18 @@ export function UnlimitedHeardle({ db }) {
     function nextSong() {
         resetStates()
         // const newList = videos.filter((vid) => vid.title !== video.title);
-        var newList = videos;
-        const idx = videos.indexOf({title: video.title, videoId: video.videoId});
+        var idx = -1;
+        for (var i = 0; i < videos.length; i++) {
+            if (videos[i].title === video.title) {
+                idx = i;
+                break;
+            }
+        }
         if (idx > -1) {
-            newList = videos.splice(idx, 1);
+            videos.splice(idx, 1);
             setVideos(videos);
         }
-        getRandomVideo(newList);
+        getRandomVideo(videos);
         setTimeout(() => setVideoLoaded(true), 200)
 
     }
@@ -117,7 +122,7 @@ export function UnlimitedHeardle({ db }) {
         const docSnap = await getDoc(docRef);
         const daily = docSnap.data();
         setVideos(daily.videos);
-        setOriginalVideos(daily.videos);
+        setOriginalVideos(JSON.parse(JSON.stringify(daily.videos)));
         getRandomVideo(daily.videos)
         setTimeout(() => setVideoLoaded(true), 1000);
     }

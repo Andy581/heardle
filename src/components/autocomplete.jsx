@@ -39,6 +39,7 @@ export default function Autocomplete({ suggestions, userInput, setUserInput }) {
       setActiveSuggestion(activeSuggestion - 1);
     }
     else if (key === 'Enter') {
+      if (filteredSuggestions.length === 0) return;
       setUserInput(filteredSuggestions[activeSuggestion]);
       setActiveSuggestion(0);
       setShowSuggestion(false);

@@ -91,13 +91,18 @@ export function CustomPlaylist({ db }) {
     function nextSong() {
         resetStates()
         // const newList = videos.filter((vid) => vid.title !== video.title);
-        var newList = videos;
-        const idx = videos.indexOf({title: video.title, videoId: video.videoId});
+        var idx = -1;
+        for (var i = 0; i < videos.length; i++) {
+            if (videos[i].title === video.title) {
+                idx = i;
+                break;
+            }
+        }
         if (idx > -1) {
-            newList = videos.splice(idx, 1);
+            videos.splice(idx, 1);
             setVideos(videos);
         }
-        getRandomVideo(newList);
+        getRandomVideo(videos);
         setTimeout(() => setVideoLoaded(true), 200)
 
     }
@@ -132,7 +137,8 @@ export function CustomPlaylist({ db }) {
             nextPageToken = nextPage.data.nextPageToken;
         }
         videos = videos.map((video) => { return { videoId: video.snippet.resourceId.videoId, title: video.snippet.title } });
-        setOriginalVideos(videos);
+        // setOriginalVideos(videos);
+        setOriginalVideos(JSON.parse(JSON.stringify(videos)));
         setVideos(videos);
         await getRandomVideo(videos);
         setTimeout(() => setVideoLoaded(true), 1000);
