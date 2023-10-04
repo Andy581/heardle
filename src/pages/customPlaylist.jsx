@@ -12,8 +12,11 @@ import PlayButton from "../components/playButton";
 import GameBar from "../components/gameBar";
 import Autocomplete from "../components/autocomplete";
 import { Loading } from "../components/svg";
-
+import { useCookies } from "react-cookie";
+import { v4 as uuidv4 } from 'uuid';
+import { doc, setDoc } from 'firebase/firestore';
 export function CustomPlaylist({ db }) {
+    const [cookies, setCookies] = useCookies(['user'])
     const [playlistLink, setPlaylistLink] = useState('');
     const [hidden, setHidden] = useState(false);
     const [score, setScore] = useState(0);
@@ -102,14 +105,12 @@ export function CustomPlaylist({ db }) {
             setVideos(videos);
         }
         getRandomVideo(videos);
-        setTimeout(() => setVideoLoaded(true), 200)
 
     }
     async function restartGame() {
         resetStates();
         setVideos(originalVideos);
         getRandomVideo(originalVideos)
-        setTimeout(() => setVideoLoaded(true), 1000);
     }
     async function handleModal() {
         if (!isUrlHttp(playlistLink)) { setInvalid({ invalid: true, reason: "Invalid URL" }); return; }
@@ -123,6 +124,12 @@ export function CustomPlaylist({ db }) {
         gameStart(id);
     }
     async function gameStart(id) {
+        if (!cookies.uuid) {
+            const uuid = uuidv4();
+            setCookies('uuid', uuid, { expires: new Date(new Date().setFullYear(2024)), path: '/' })
+            const docRef = doc(db, "users", uuid);
+            await setDoc(docRef, { uuid: uuid })
+        }
         var pageInfo;
         var nextPageToken = '';
         var playlist = await axios.get(`https://youtube.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=${id}&key=${API_KEY}`, { validateStatus: false });
@@ -136,7 +143,6 @@ export function CustomPlaylist({ db }) {
             nextPageToken = nextPage.data.nextPageToken;
         }
         videos = videos.map((video) => { return { videoId: video.snippet.resourceId.videoId, title: video.snippet.title } });
-        // setOriginalVideos(videos);
         setOriginalVideos(JSON.parse(JSON.stringify(videos)));
         setVideos(videos);
         await getRandomVideo(videos);
@@ -150,6 +156,17 @@ export function CustomPlaylist({ db }) {
         time = moment.duration(timeString, moment.ISO_8601).asSeconds();
         setVideo({ title: randomVideo.title, maxTime: time, videoId: randomVideo.videoId });
         setTitles(videos.map(video => video.title))
+    }
+    function handleLoad() {
+        if (cookies.volume && document.getElementById("secretVideo")) {
+            var youtubeEmbedWindow = document.getElementById("secretVideo").contentWindow;
+            var data = { event: 'command', func: 'setVolume', args: [cookies.volume] }
+            var message = JSON.stringify(data);
+            youtubeEmbedWindow.postMessage(message, '*');
+          }
+        if (document.getElementById("secretVideo")) {
+            setVideoLoaded(true);
+        }
     }
     return (
         <div class="h-screen bg-[#1e293b]">
@@ -183,7 +200,7 @@ export function CustomPlaylist({ db }) {
                     <>
                         <p class="text-white"> Score {score} / {originalVideos.length}
                         </p> <Attempts attemptDetails={attemptDetails} />
-                        <iframe id="secretVideo" width="0" height="0" src={`https://www.youtube.com/embed/${video.videoId}?&enablejsapi=1`} title="YouTube video player" frameborder="0" allow="autoplay" allowfullscreen />
+                        <iframe id="secretVideo" width="0" height="0" src={`https://www.youtube.com/embed/${video.videoId}?&enablejsapi=1`} title="YouTube video player" frameborder="0" allow="autoplay" allowfullscreen onLoad={handleLoad}/>
                     </>
                     :
                     <>

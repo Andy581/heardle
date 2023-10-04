@@ -88,7 +88,6 @@ export function UnlimitedHeardle({ db }) {
     }
     function nextSong() {
         resetStates()
-        // const newList = videos.filter((vid) => vid.title !== video.title);
         var idx = -1;
         for (var i = 0; i < videos.length; i++) {
             if (videos[i].title === video.title) {
@@ -101,14 +100,11 @@ export function UnlimitedHeardle({ db }) {
             setVideos(videos);
         }
         getRandomVideo(videos);
-        setTimeout(() => setVideoLoaded(true), 200)
-
     }
     async function restartGame() {
         resetStates();
         setVideos(originalVideos);
         getRandomVideo(originalVideos)
-        setTimeout(() => setVideoLoaded(true), 1000);
     }
     useEffect(() => { gameStart(); }, [])
     const gameStart = async () => {
@@ -124,14 +120,18 @@ export function UnlimitedHeardle({ db }) {
         setVideos(daily.videos);
         setOriginalVideos(JSON.parse(JSON.stringify(daily.videos)));
         getRandomVideo(daily.videos)
-        setTimeout(() => setVideoLoaded(true), 1000);
     }
 
-    function handleVolume() {
-        var youtubeEmbedWindow = document.getElementById("secretVideo").contentWindow;
-        var data = { event: 'command', func: 'setVolume', args: [volume] }
-        var message = JSON.stringify(data);
-        youtubeEmbedWindow.postMessage(message, '*');
+    function handleLoad() {
+        if (cookies.volume && document.getElementById("secretVideo")) {
+            var youtubeEmbedWindow = document.getElementById("secretVideo").contentWindow;
+            var data = { event: 'command', func: 'setVolume', args: [cookies.volume] }
+            var message = JSON.stringify(data);
+            youtubeEmbedWindow.postMessage(message, '*');
+          }
+        if (document.getElementById("secretVideo")) {
+            setVideoLoaded(true);
+        }
     }
 
     async function getRandomVideo(videos) {
@@ -156,7 +156,7 @@ export function UnlimitedHeardle({ db }) {
                             Score {score} / {originalVideos.length}
                         </p>
                         <Attempts attemptDetails={attemptDetails} />
-                        <iframe id="secretVideo" width="0" height="0" src={`https://www.youtube.com/embed/${video.videoId}?&enablejsapi=1`} title="YouTube video player" frameborder="0" allow="autoplay" allowfullscreen onLoad={handleVolume} />
+                        <iframe id="secretVideo" width="0" height="0" src={`https://www.youtube.com/embed/${video.videoId}?&enablejsapi=1`} title="YouTube video player" frameborder="0" allow="autoplay" allowfullscreen onLoad={handleLoad} />
                     </>
                     :
                     <>

@@ -177,6 +177,20 @@ export function DailyHeardle({ db }) {
       videos: data.map(data => { return { title: data.snippet.title, videoId: data.snippet.resourceId.videoId } })
     });
   }
+  function handleLoad() {
+    if (cookies.volume && document.getElementById("secretVideo")) {
+      var youtubeEmbedWindow = document.getElementById("secretVideo").contentWindow;
+      var data = { event: 'command', func: 'setVolume', args: [cookies.volume] }
+      var message = JSON.stringify(data);
+      youtubeEmbedWindow.postMessage(message, '*');
+    }
+    if (cookies.states && document.getElementById("secretVideo")) {
+      var youtubeEmbedWindow = document.getElementById("secretVideo").contentWindow;
+      var data = { event: 'command', func: 'seekTo', args: [cookies.states.startTime, true] }
+      var message = JSON.stringify(data);
+    youtubeEmbedWindow.postMessage(message, '*');
+    }
+  }
   return (
     <div class="h-screen bg-[#1e293b] ">
       <Sidebar />
@@ -187,7 +201,7 @@ export function DailyHeardle({ db }) {
         {!gameEnded ?
           <>
             <Attempts attemptDetails={attemptDetails} />
-            <iframe id="secretVideo" width="0" height="0" src={`https://www.youtube.com/embed/${video.videoId}?&enablejsapi=1`} title="YouTube video player" frameborder="0" allow="autoplay" allowfullscreen />
+            <iframe id="secretVideo" width="560" height="315" src={`https://www.youtube.com/embed/${video.videoId}?&enablejsapi=1`} title="YouTube video player" frameborder="0" allow="autoplay" allowfullscreen onLoad={handleLoad()} />
           </>
           :
           <>
