@@ -18,3 +18,4 @@ export const PLAYLIST_ID = {
   'taylorSwift' : 'PL8Mmb1wo4Vy4bc82bDoamglh2ey9YTm4J'
 }
 export const API_KEY = `${process.env.REACT_APP_GOOGLE_API_KEY}`
+export const G_TAG = `${process.env.REACT_APP_G_TAG}`;
