@@ -9,7 +9,10 @@ import { DailyHeardle } from './pages/dailyHeardle';
 import { getFirestore } from 'firebase/firestore';
 import { initializeApp } from 'firebase/app';
 import { CustomPlaylist } from './pages/customPlaylist';
+import { G_TAG } from './constants';
+import ReactGA from "react-ga4";
 
+ReactGA.initialize(G_TAG);
 const root = ReactDOM.createRoot(document.getElementById('root'));
 const firebaseConfig = {
     apiKey: `${process.env.REACT_APP_FIREBASE_API_KEY}`,
