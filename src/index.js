@@ -13,7 +13,7 @@ import { CustomPlaylist } from './pages/customPlaylist';
 import { G_TAG } from './constants';
 
 const tagManagerArgs = {
-  gtmId: G_TAG
+  gtmId: `${process.env.REACT_APP_G_TAG}`
 }
 TagManager.initialize(tagManagerArgs);
 const root = ReactDOM.createRoot(document.getElementById('root'));
