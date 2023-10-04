@@ -88,8 +88,13 @@ export function UnlimitedHeardle({ db }) {
     }
     function nextSong() {
         resetStates()
-        const newList = videos.filter((vid) => vid.title !== video.title);
-        setVideos(newList);
+        // const newList = videos.filter((vid) => vid.title !== video.title);
+        var newList = videos;
+        const idx = videos.indexOf({title: video.title, videoId: video.videoId});
+        if (idx > -1) {
+            newList = videos.splice(idx, 1);
+            setVideos(videos);
+        }
         getRandomVideo(newList);
         setTimeout(() => setVideoLoaded(true), 200)
 
