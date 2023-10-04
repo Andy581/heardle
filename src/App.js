@@ -3,7 +3,7 @@ import './App.css';
 import { Sidebar } from './components/sidebar';
 import { useCookies } from 'react-cookie';
 import { v4 as uuidv4 } from 'uuid';
-import { updateDoc, doc } from 'firebase/firestore';
+import { setDoc, doc } from 'firebase/firestore';
 
 // Gonna move all this crap when we have different pages
 function App({ db }) {
@@ -13,8 +13,8 @@ function App({ db }) {
       if (!cookies.uuid) {
         const uuid = uuidv4();
         setCookies('uuid', uuid, { expires: new Date(new Date().setFullYear(2024)), path: '/' })
-        const docRef = doc(db, "users", "uuids");
-        await updateDoc(docRef, { uuid: uuid })
+        const docRef = doc(db, "users", uuid);
+        await setDoc(docRef, { uuid: uuid })
       }
     }
     checkUUID();

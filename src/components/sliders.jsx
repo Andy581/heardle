@@ -1,5 +1,4 @@
 import React, { useEffect } from "react";
-import { useState } from "react";
 import { VolumeDown, VolumeUp } from "./svg"
 import { useCookies } from "react-cookie";
 export function VolumeSlider({volume, setVolume}) {

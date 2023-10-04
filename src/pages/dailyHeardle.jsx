@@ -9,7 +9,7 @@ import axios from 'axios';
 import Autocomplete from '../components/autocomplete';
 import Results from '../components/results';
 import { Loading } from '../components/svg';
-import { doc, getDoc, updateDoc } from 'firebase/firestore';
+import { doc, getDoc, updateDoc, setDoc } from 'firebase/firestore';
 import moment from 'moment/moment';
 import { getRandomInt, isToday } from '../common';
 import { API_KEY, CURRENT, PAST, FUTURE, SKIPPED, WRONG, CORRECT, EMPTY_ATTEMPTS, DURATION, PLAYLIST_ID } from '../constants';
@@ -116,8 +116,8 @@ export function DailyHeardle({ db }) {
     if (!cookies.uuid) {
       const uuid = uuidv4();
       setCookies('uuid', uuid, { expires: new Date(new Date().setFullYear(2024)), path: '/' })
-      const docRef = doc(db, "users", "uuids");
-      await updateDoc(docRef, { uuid: uuid })
+      const docRef = doc(db, "users", uuid);
+      await setDoc(docRef, { uuid: uuid })
     }
     if (cookies.states) {
       setAttemptDetails(cookies.states.attemptDetails);

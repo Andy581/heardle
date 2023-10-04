@@ -6,7 +6,7 @@ import PlayButton from '../components/playButton';
 import axios from 'axios';
 import Autocomplete from '../components/autocomplete';
 import { Loading } from '../components/svg';
-import { doc, getDoc, updateDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
 import moment from 'moment/moment';
 import { getRandomInt } from '../common';
 import { API_KEY, CURRENT, PAST, FUTURE, SKIPPED, WRONG, CORRECT, EMPTY_ATTEMPTS, DURATION } from '../constants';
@@ -105,8 +105,8 @@ export function UnlimitedHeardle({ db }) {
         if (!cookies.uuid) {
             const uuid = uuidv4();
             setCookies('uuid', uuid, { expires: new Date(new Date().setFullYear(2024)), path: '/' })
-            const docRef = doc(db, "users", "uuids");
-            await updateDoc(docRef, { uuid: uuid })
+            const docRef = doc(db, "users", uuid);
+            await setDoc(docRef, { uuid: uuid })
           }
         const docRef = doc(db, "dailyHeardle", genre);
         const docSnap = await getDoc(docRef);
