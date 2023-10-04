@@ -164,7 +164,7 @@ export function CustomPlaylist({ db }) {
                             </div>
                             {/* <!-- Modal body --> */}
                             <div class="p-6 space-y-4">
-                                <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Public Playlist URL (cannot be a Youtube My Mix)</label>
+                                <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Public/Unlisted Playlist URL (cannot be a Youtube My Mix)</label>
                                 <input type="text" placeholder="https://www.youtube.com/playlist?list=PLOHoVaTp8R7dfrJW5pumS0iD_dhlXKv17" style={{ borderColor: invalid.invalid ? "#ef4444" : "#d1d5db" }} class="bg-gray-50 border text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white" value={playlistLink} onChange={(e) => setPlaylistLink(e.target.value)}></input>
                                 <p class="text-white">{invalid.reason}</p>
                             </div>

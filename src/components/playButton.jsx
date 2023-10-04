@@ -11,6 +11,9 @@ export default function PlayButton({ setSliderDisabled, setSongBar, startTime, d
             var data = { event: 'command', func: 'seekTo', args: [cookies.states.startTime, true] }
             var message = JSON.stringify(data);
             youtubeEmbedWindow.postMessage(message, '*');
+            data = { event: 'command', func: 'setVolume', args: [cookies.states.volume] }
+            message = JSON.stringify(data);
+            youtubeEmbedWindow.postMessage(message, '*');
         }
         setSliderDisabled(true);
         youtubeEmbedWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
