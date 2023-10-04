@@ -16,6 +16,9 @@ export default function PlayButton({ setSliderDisabled, setSongBar, startTime, d
         youtubeEmbedWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
         setTimeout(() => {
             setSongBar({ duration: 0, width: 0 });
+            var data = { event: 'command', func: 'seekTo', args: [startTime, true] }
+            var message = JSON.stringify(data);
+            youtubeEmbedWindow.postMessage(message, '*');
             youtubeEmbedWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
         }, duration * 1000);
         setSongBar({ duration: duration, width: duration });
