@@ -53,7 +53,8 @@ export function DailyHeardle({ db }) {
       count: count + 1,
       skip: skip + 1,
       startTime: startTime,
-      sectionColors: sectionColors
+      sectionColors: sectionColors,
+      songBar: songBar,
     }
     setCookies('states', states, {expires: new Date(new Date().setHours(24,0,0,0,0)), path: `/daily/${genre}`});
   } 
@@ -75,7 +76,7 @@ export function DailyHeardle({ db }) {
   }
   function handleGuess() {
     if (!sliderDisabled) setSliderDisabled(true);
-    attemptDetails[count].value = input;
+    attemptDetails[count].value = "❌" + input;
     setInput('');
     if (input === video.title) {
       attemptDetails[count].color = CORRECT;
@@ -117,6 +118,7 @@ export function DailyHeardle({ db }) {
       setSkip(cookies.states.skip);
       setSectionColors(cookies.states.sectionColors);
       setCount(cookies.states.count);
+      setSongBar(cookies.states.songBar);
     }
     if(cookies.done) 
       setGameEnded(true);

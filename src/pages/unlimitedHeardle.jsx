@@ -79,6 +79,8 @@ export function UnlimitedHeardle({ db }) {
         setAttemptDetails(JSON.parse(JSON.stringify(EMPTY_ATTEMPTS)));
         setSkip(1);
         setVideoLoaded(false);
+        setSongBar({ duration: DURATION[count], width: 0, });
+        setSectionColors([CURRENT, FUTURE, FUTURE, FUTURE, FUTURE, FUTURE])
     }
     function nextSong() {
         resetStates()
