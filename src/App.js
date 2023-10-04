@@ -1,8 +1,12 @@
 import './App.css';
 import { Sidebar } from './components/sidebar';
+import ReactGA from 'react-ga4';
+import { G_TAG } from './constants';
 
 // Gonna move all this crap when we have different pages
 function App() {
+  ReactGA.initialize([{trackingId: G_TAG}]);
+  ReactGA.send({hitType: "pageview", page: window.location.pathname, title: "App Title"});
   return (
     <div className="App" class="h-screen bg-[#1e293b] ">
         <Sidebar/>
