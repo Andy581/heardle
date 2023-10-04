@@ -14,7 +14,7 @@ export const EMPTY_ATTEMPTS =  [
   ]
 export const DURATION = [1, 2, 4, 7, 11, 16];
 export const PLAYLIST_ID = {
-  "kpop" : "PL4QNnZJr8sRNKjKzArmzTBAlNYBDN2h-J",
+  "kpop" : "RDCLAK5uy_mHW5bcduhjB-PkTePAe6EoRMj1xNT8gzY",
   'taylorSwift' : 'PL8Mmb1wo4Vy4bc82bDoamglh2ey9YTm4J'
 }
 export const API_KEY = `${process.env.REACT_APP_GOOGLE_API_KEY}`

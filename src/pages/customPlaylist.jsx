@@ -32,6 +32,7 @@ export function CustomPlaylist({ db }) {
     )
     const [titles, setTitles] = useState([]);
     const [video, setVideo] = useState({ videoId: '', maxTime: 0, title: 'dummyTitle' });
+    const [volume, setVolume] = useState(100);
     const [originalVideos, setOriginalVideos] = useState([]);
     const [invalid, setInvalid] = useState({
         invalid: false,
@@ -148,8 +149,8 @@ export function CustomPlaylist({ db }) {
                 <Title />
             </div>
             <div className="Body" class="flex flex-col items-center space-y-4 min-h-[40%]" >
-                <div style={{ display: hidden ? "none" : "" }} class="fixed bg-[#1e293b] mx-auto z-50 w-[50%] p-4  ">
-                    <div class="relative w-full max-w-2xl max-h-full">
+                <div style={{ display: hidden ? "none" : "" }} class="fixed z-50 w-[100%] p-4  ">
+                    <div class="relative w-full max-w-2xl mx-auto max-h-full">
                         {/* <!-- Modal content --> */}
                         <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
                             {/* <!-- Modal header --> */}
@@ -199,7 +200,7 @@ export function CustomPlaylist({ db }) {
                             :
                             <Loading />
                         }
-                        <VolumeSlider />
+                        <VolumeSlider volume={volume} setVolume={setVolume}/>
                         <Autocomplete userInput={input} setUserInput={setInput} suggestions={titles} />
                         <div class="w-2/6 flex justify-between">
                             <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded disabled:opacity-25 disabled:bg-blue-500" disabled={!hidden} onClick={handleSkip} > Skip ({skip}s)
