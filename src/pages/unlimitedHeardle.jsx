@@ -139,7 +139,7 @@ export function UnlimitedHeardle({ db }) {
                             Score {score} / {originalVideos.length}
                         </p>
                         <Attempts attemptDetails={attemptDetails} />
-                        <iframe id="secretVideo" width="560" height="315" src={`https://www.youtube.com/embed/${video.videoId}?&enablejsapi=1`} title="YouTube video player" frameborder="0" allow="autoplay" allowfullscreen onLoad={handleVolume}/>
+                        <iframe id="secretVideo" width="0" height="0" src={`https://www.youtube.com/embed/${video.videoId}?&enablejsapi=1`} title="YouTube video player" frameborder="0" allow="autoplay" allowfullscreen onLoad={handleVolume}/>
                     </>
                     :
                     <>
