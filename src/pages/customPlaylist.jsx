@@ -88,8 +88,13 @@ export function CustomPlaylist({ db }) {
     }
     function nextSong() {
         resetStates()
-        const newList = videos.filter((vid) => vid.title !== video.title);
-        setVideos(newList);
+        // const newList = videos.filter((vid) => vid.title !== video.title);
+        var newList = videos;
+        const idx = videos.indexOf({title: video.title, videoId: video.videoId});
+        if (idx > -1) {
+            newList = videos.splice(idx, 1);
+            setVideos(videos);
+        }
         getRandomVideo(newList);
         setTimeout(() => setVideoLoaded(true), 200)
 
@@ -101,12 +106,10 @@ export function CustomPlaylist({ db }) {
         setTimeout(() => setVideoLoaded(true), 1000);
     }
     async function handleModal() {
-        console.log(playlistLink);
         if (!isUrlHttp(playlistLink)) { setInvalid({ invalid: true, reason: "Invalid URL" }); return; }
         const url = new URL(playlistLink);
         const urlParams = new URLSearchParams(url.search);
         const id = urlParams.get('list');
-        console.log(id);
         if (id === '') { setInvalid({ invalid: true, reason: "URL missing link param" }); return; }
         var response = await axios.get(`https://youtube.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=${id}&key=${API_KEY}`, { validateStatus: false });
         if (response.status !== 200) { setInvalid({ invalid: true, reason: "Invalid Youtube Playlist" }); return; }
@@ -121,8 +124,6 @@ export function CustomPlaylist({ db }) {
         pageInfo = playlist.data.pageInfo;
         var videos = [];
         videos = videos.concat(playlist.data.items);
-        nextPageToken = playlist.data.nextPageToken;
-        console.log("page info ", pageInfo.totalResults)
         for (let i = 1; i < Math.ceil(pageInfo.totalResults / pageInfo.resultsPerPage); i++) {
             var nextPage = await axios.get(`https://youtube.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&pageToken=${nextPageToken}&playlistId=${id}&key=${API_KEY}`);
             videos = videos.concat(nextPage.data.items);
@@ -130,6 +131,7 @@ export function CustomPlaylist({ db }) {
         }
         videos = videos.map((video) => { return { videoId: video.snippet.resourceId.videoId, title: video.snippet.title } });
         setOriginalVideos(videos);
+        setVideos(videos);
         await getRandomVideo(videos);
         setTimeout(() => setVideoLoaded(true), 1000);
     }
@@ -174,7 +176,7 @@ export function CustomPlaylist({ db }) {
                     <>
                         <p class="text-white"> Score {score} / {originalVideos.length}
                         </p> <Attempts attemptDetails={attemptDetails} />
-                        <iframe id="secretVideo" width="0" height="0" src={`https://www.youtube.com/embed/${video.videoId}?&enablejsapi=1`} title="YouTube video player" frameborder="0" allow="autoplay" allowfullscreen />
+                        <iframe id="secretVideo" width="560" height="315" src={`https://www.youtube.com/embed/${video.videoId}?&enablejsapi=1`} title="YouTube video player" frameborder="0" allow="autoplay" allowfullscreen />
                     </>
                     :
                     <>
