@@ -16,7 +16,7 @@ import { API_KEY, CURRENT, PAST, FUTURE, SKIPPED, WRONG, CORRECT, EMPTY_ATTEMPTS
 import { StartTimeSlider, VolumeSlider } from '../components/sliders';
 import { Sidebar } from '../components/sidebar';
 import { useCookies } from 'react-cookie';
-import {v4 as uuidv4} from 'uuid';
+import { v4 as uuidv4 } from 'uuid';
 
 export function DailyHeardle({ db }) {
   const Ref = useRef(null);
@@ -47,7 +47,7 @@ export function DailyHeardle({ db }) {
     handleCookieStates(attemptDetails, sectionColors);
     setSectionColors(sectionColors);
     setCount(count + 1);
-    setSkip(skip+1);
+    setSkip(skip + 1);
   }
   function handleCookieStates(attemptDetails, sectionColors) {
     const states = {
@@ -58,8 +58,8 @@ export function DailyHeardle({ db }) {
       sectionColors: sectionColors,
       songBar: songBar,
     }
-    setCookies('states', states, {expires: new Date(new Date().setHours(24,0,0,0,0)), path: `/daily/${genre}`});
-  } 
+    setCookies('states', states, { expires: new Date(new Date().setHours(24, 0, 0, 0, 0)), path: `/daily/${genre}` });
+  }
   function handleSkip() {
     attemptDetails[count].value = "Skipped";
     attemptDetails[count].color = SKIPPED;
@@ -71,7 +71,7 @@ export function DailyHeardle({ db }) {
     movePotentialBar();
   }
   function handleEndGame() {
-    setCookies('done', true, {expires: new Date(new Date().setHours(24,0,0,0)), path: `/daily/${genre}`})
+    setCookies('done', true, { expires: new Date(new Date().setHours(24, 0, 0, 0)), path: `/daily/${genre}` })
     clearInterval(Ref.current);
     setGameEnded(true);
     setSliderDisabled(true);
@@ -128,7 +128,7 @@ export function DailyHeardle({ db }) {
       setCount(cookies.states.count);
       setSongBar(cookies.states.songBar);
     }
-    if(cookies.done) 
+    if (cookies.done)
       setGameEnded(true);
     const dayId = setInterval(() => {
       checkDay();
@@ -157,7 +157,7 @@ export function DailyHeardle({ db }) {
       }
       getRandomVideo(data, docRef);
     }
-    setTimeout(() => setVideoLoaded(true), 1000);
+    setTimeout(() => setVideoLoaded(true), 2000);
   }
 
   async function getRandomVideo(data, docRef) {
@@ -179,7 +179,7 @@ export function DailyHeardle({ db }) {
   }
   return (
     <div class="h-screen bg-[#1e293b] ">
-        <Sidebar/>
+      <Sidebar />
       <div class="text-center min-h-[5%]" >
         <Title />
       </div>
@@ -216,8 +216,8 @@ export function DailyHeardle({ db }) {
                 :
                 <Loading />
               }
-              <VolumeSlider volume={volume} setVolume={setVolume}/>
-              <Autocomplete userInput={input} setUserInput={setInput} suggestions={titles} />
+              <VolumeSlider volume={volume} setVolume={setVolume} />
+              <Autocomplete userInput={input} setUserInput={setInput} suggestions={titles} handleGuess={handleGuess} />
               <div class="w-2/6 flex justify-between">
                 <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded disabled:opacity-25 disabled:bg-blue-500"
                   onClick={handleSkip}

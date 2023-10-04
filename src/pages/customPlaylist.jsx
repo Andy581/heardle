@@ -90,7 +90,6 @@ export function CustomPlaylist({ db }) {
     }
     function nextSong() {
         resetStates()
-        // const newList = videos.filter((vid) => vid.title !== video.title);
         var idx = -1;
         for (var i = 0; i < videos.length; i++) {
             if (videos[i].title === video.title) {
@@ -210,8 +209,8 @@ export function CustomPlaylist({ db }) {
                             :
                             <Loading />
                         }
-                        <VolumeSlider volume={volume} setVolume={setVolume}/>
-                        <Autocomplete userInput={input} setUserInput={setInput} suggestions={titles} />
+                        <VolumeSlider volume={volume} setVolume={setVolume} />
+                        <Autocomplete userInput={input} setUserInput={setInput} suggestions={titles} handleGuess={handleGuess} />
                         <div class="w-2/6 flex justify-between">
                             <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded disabled:opacity-25 disabled:bg-blue-500" disabled={!hidden} onClick={handleSkip} > Skip ({skip}s)
                             </button>

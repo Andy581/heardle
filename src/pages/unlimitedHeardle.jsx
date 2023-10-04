@@ -14,7 +14,7 @@ import { StartTimeSlider, VolumeSlider } from '../components/sliders';
 import { useParams } from 'react-router-dom';
 import { Sidebar } from '../components/sidebar';
 import { useCookies } from 'react-cookie';
-import {v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from 'uuid';
 export function UnlimitedHeardle({ db }) {
     const [score, setScore] = useState(0);
     const [videos, setVideos] = useState([]);
@@ -61,7 +61,7 @@ export function UnlimitedHeardle({ db }) {
     }
     function handleGuess() {
         if (!sliderDisabled) setSliderDisabled(true);
-        attemptDetails[count].value = input;
+        attemptDetails[count].value = "❌" + input;
         setInput('');
         if (input === video.title) {
             setScore(score + 1);
@@ -117,7 +117,7 @@ export function UnlimitedHeardle({ db }) {
             setCookies('uuid', uuid, { expires: new Date(new Date().setFullYear(2024)), path: '/' })
             const docRef = doc(db, "users", uuid);
             await setDoc(docRef, { uuid: uuid })
-          }
+        }
         const docRef = doc(db, "dailyHeardle", genre);
         const docSnap = await getDoc(docRef);
         const daily = docSnap.data();
@@ -156,7 +156,7 @@ export function UnlimitedHeardle({ db }) {
                             Score {score} / {originalVideos.length}
                         </p>
                         <Attempts attemptDetails={attemptDetails} />
-                        <iframe id="secretVideo" width="0" height="0" src={`https://www.youtube.com/embed/${video.videoId}?&enablejsapi=1`} title="YouTube video player" frameborder="0" allow="autoplay" allowfullscreen onLoad={handleVolume}/>
+                        <iframe id="secretVideo" width="0" height="0" src={`https://www.youtube.com/embed/${video.videoId}?&enablejsapi=1`} title="YouTube video player" frameborder="0" allow="autoplay" allowfullscreen onLoad={handleVolume} />
                     </>
                     :
                     <>
@@ -196,8 +196,8 @@ export function UnlimitedHeardle({ db }) {
                                 :
                                 <Loading />
                             }
-                            <VolumeSlider volume={volume} setVolume={setVolume}/>
-                            <Autocomplete userInput={input} setUserInput={setInput} suggestions={titles} />
+                            <VolumeSlider volume={volume} setVolume={setVolume} />
+                            <Autocomplete userInput={input} setUserInput={setInput} suggestions={titles} handleGuess={handleGuess} />
                             <div class="w-2/6 flex justify-between">
                                 <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded disabled:opacity-25 disabled:bg-blue-500"
                                     onClick={handleSkip}

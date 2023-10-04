@@ -1,7 +1,7 @@
 import React from 'react';
 import { useState } from 'react';
 
-export default function Autocomplete({ suggestions, userInput, setUserInput }) {
+export default function Autocomplete({ suggestions, userInput, setUserInput, handleGuess }) {
   const [activeSuggestion, setActiveSuggestion]  = useState(0);
   const [filteredSuggestions, setFilterSuggestions] = useState([]);
   const [showSuggestion, setShowSuggestion] = useState(false);
@@ -39,7 +39,7 @@ export default function Autocomplete({ suggestions, userInput, setUserInput }) {
       setActiveSuggestion(activeSuggestion - 1);
     }
     else if (key === 'Enter') {
-      if (filteredSuggestions.length === 0) return;
+      if (filteredSuggestions.length === 0) {handleGuess();return;}
       setUserInput(filteredSuggestions[activeSuggestion]);
       setActiveSuggestion(0);
       setShowSuggestion(false);

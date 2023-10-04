@@ -10,9 +10,9 @@ function App({ db }) {
   const [cookies, setCookies] = useCookies(['user'])
   useEffect(() => {
     const checkUUID = async () => {
-      if (!cookies.uuid) {
+      if (!cookies.uuid2) {
         const uuid = uuidv4();
-        setCookies('uuid', uuid, { expires: new Date(new Date().setFullYear(2024)), path: '/' })
+        setCookies('uuid2', uuid, { expires: new Date(new Date().setFullYear(2024)), path: '/' })
         const docRef = doc(db, "users", uuid);
         await setDoc(docRef, { uuid: uuid })
       }
