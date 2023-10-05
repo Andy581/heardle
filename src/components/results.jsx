@@ -11,7 +11,7 @@ export default function Results({count, startTime, attemptDetails, isCorrect}) {
                     )
                 })}
             </div>
-            <p class="text-white">
+            <p class="text-white text-center">
                 {message}
             </p>
         </div>
