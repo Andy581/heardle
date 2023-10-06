@@ -3,9 +3,8 @@ import { Sidebar } from "../components/sidebar";
 import Title from "../components/title";
 import axios from "axios";
 import isUrlHttp from "is-url-http";
-import moment from "moment";
 import { API_KEY, CURRENT, PAST, FUTURE, SKIPPED, WRONG, CORRECT, EMPTY_ATTEMPTS, DURATION } from '../constants';
-import { getRandomInt } from "../common";
+import { getRandomVideo, handleLoad } from "../common";
 import Attempts from "../components/attempt";
 import { StartTimeSlider, VolumeSlider } from "../components/sliders";
 import PlayButton from "../components/playButton";
@@ -104,13 +103,15 @@ export function CustomPlaylist({ db }) {
             videos.splice(idx, 1);
             setVideos(videos);
         }
-        getRandomVideo(videos);
+        getRandomVideo(videos, {setVideo, setTitles});
 
     }
     async function restartGame() {
         resetStates();
         setVideos(originalVideos);
-        getRandomVideo(originalVideos)
+        setOriginalVideos(JSON.parse(JSON.stringify(originalVideos)));
+        setScore(0);
+        getRandomVideo(originalVideos, {setVideo, setTitles});
     }
     async function handleModal() {
         if (!isUrlHttp(playlistLink)) { setInvalid({ invalid: true, reason: "Invalid URL" }); return; }
@@ -145,28 +146,8 @@ export function CustomPlaylist({ db }) {
         videos = videos.map((video) => { return { videoId: video.snippet.resourceId.videoId, title: video.snippet.title } });
         setOriginalVideos(JSON.parse(JSON.stringify(videos)));
         setVideos(videos);
-        await getRandomVideo(videos);
-        setTimeout(() => setVideoLoaded(true), 1000);
-    }
-    async function getRandomVideo(videos) {
-        var randomVideo = videos[getRandomInt(videos.length)];
-        var time;
-        var response = await axios.get(`https://youtube.googleapis.com/youtube/v3/videos?part=snippet%2CcontentDetails&id=${randomVideo.videoId}&key=${API_KEY}`);
-        var timeString = response.data.items[0].contentDetails.duration;
-        time = moment.duration(timeString, moment.ISO_8601).asSeconds();
-        setVideo({ title: randomVideo.title, maxTime: time, videoId: randomVideo.videoId });
-        setTitles(videos.map(video => video.title))
-    }
-    function handleLoad() {
-        if (cookies.volume && document.getElementById("secretVideo")) {
-            var youtubeEmbedWindow = document.getElementById("secretVideo").contentWindow;
-            var data = { event: 'command', func: 'setVolume', args: [cookies.volume] }
-            var message = JSON.stringify(data);
-            youtubeEmbedWindow.postMessage(message, '*');
-          }
-        if (document.getElementById("secretVideo")) {
-            setVideoLoaded(true);
-        }
+        getRandomVideo(videos, {setVideo, setTitles});
+
     }
     return (
         <div class="h-screen bg-[#1e293b]">
@@ -200,7 +181,7 @@ export function CustomPlaylist({ db }) {
                     <>
                         <p class="text-white"> Score {score} / {originalVideos.length}
                         </p> <Attempts attemptDetails={attemptDetails} />
-                        <iframe id="secretVideo" width="0" height="0" src={`https://www.youtube.com/embed/${video.videoId}?&enablejsapi=1`} title="YouTube video player" frameborder="0" allow="autoplay" allowfullscreen onLoad={handleLoad}/>
+                        <iframe id="secretVideo" width="0" height="0" src={`https://www.youtube.com/embed/${video.videoId}?&enablejsapi=1`} title="YouTube video player" frameborder="0" allow="autoplay" allowfullscreen onLoad={() => handleLoad({cookies, setVideoLoaded})}/>
                     </>
                     :
                     <>

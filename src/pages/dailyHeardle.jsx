@@ -11,7 +11,7 @@ import Results from '../components/results';
 import { Loading } from '../components/svg';
 import { doc, getDoc, updateDoc, setDoc } from 'firebase/firestore';
 import moment from 'moment/moment';
-import { getRandomInt, isToday } from '../common';
+import { getRandomInt, handleLoad, isToday, ytSetVolume } from '../common';
 import { API_KEY, CURRENT, PAST, FUTURE, SKIPPED, WRONG, CORRECT, EMPTY_ATTEMPTS, DURATION, PLAYLIST_ID } from '../constants';
 import { StartTimeSlider, VolumeSlider } from '../components/sliders';
 import { Sidebar } from '../components/sidebar';
@@ -177,24 +177,6 @@ export function DailyHeardle({ db }) {
       videos: data.map(data => { return { title: data.snippet.title, videoId: data.snippet.resourceId.videoId } })
     });
   }
-  function handleLoad() {
-    if (cookies.volume && document.getElementById("secretVideo")) {
-      var youtubeEmbedWindow = document.getElementById("secretVideo").contentWindow;
-      var data = { event: 'command', func: 'setVolume', args: [cookies.volume] }
-      var message = JSON.stringify(data);
-      youtubeEmbedWindow.postMessage(message, '*');
-    }
-    if (cookies.states && document.getElementById("secretVideo")) {
-      var youtubeEmbedWindow = document.getElementById("secretVideo").contentWindow;
-      var data = { event: 'command', func: 'seekTo', args: [cookies.states.startTime, true] }
-      var message = JSON.stringify(data);
-      youtubeEmbedWindow.postMessage(message, '*');
-      youtubeEmbedWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
-    }
-    if (document.getElementById("secretVideo")) {
-      setVideoLoaded(true);
-    }
-  }
   return (
     <div class="h-screen bg-[#1e293b] ">
       <Sidebar />
@@ -205,7 +187,7 @@ export function DailyHeardle({ db }) {
         {!gameEnded ?
           <>
             <Attempts attemptDetails={attemptDetails} />
-            <iframe id="secretVideo" width="0" height="0" src={`https://www.youtube.com/embed/${video.videoId}?&enablejsapi=1`} title="YouTube video player" frameborder="0" allow="autoplay" allowfullscreen onLoad={handleLoad} />
+            <iframe id="secretVideo" width="0" height="0" src={`https://www.youtube.com/embed/${video.videoId}?&enablejsapi=1`} title="YouTube video player" frameborder="0" allow="autoplay" allowfullscreen onLoad={()=> handleLoad({cookies, setVideoLoaded})} />
           </>
           :
           <>

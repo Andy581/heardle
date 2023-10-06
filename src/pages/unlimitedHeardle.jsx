@@ -3,13 +3,11 @@ import Title from '../components/title';
 import GameBar from '../components/gameBar';
 import { useState, useEffect } from 'react';
 import PlayButton from '../components/playButton';
-import axios from 'axios';
 import Autocomplete from '../components/autocomplete';
 import { Loading } from '../components/svg';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
-import moment from 'moment/moment';
-import { getRandomInt } from '../common';
-import { API_KEY, CURRENT, PAST, FUTURE, SKIPPED, WRONG, CORRECT, EMPTY_ATTEMPTS, DURATION } from '../constants';
+import { handleLoad, getRandomVideo, removeVideo } from '../common';
+import { CURRENT, PAST, FUTURE, SKIPPED, WRONG, CORRECT, EMPTY_ATTEMPTS, DURATION } from '../constants';
 import { StartTimeSlider, VolumeSlider } from '../components/sliders';
 import { useParams } from 'react-router-dom';
 import { Sidebar } from '../components/sidebar';
@@ -33,7 +31,7 @@ export function UnlimitedHeardle({ db }) {
     const [titles, setTitles] = useState([]);
     const [cookies, setCookies] = useCookies(['user']);
     const [video, setVideo] = useState({ videoId: '', maxTime: 0, title: 'dummyTitle' });
-    const [originalVideos, setOriginalVideos] = useState([]);
+    const [originalVideos, setOriginalVideos] = useState([{videoId: '', title: ''}]);
     const [volume, setVolume] = useState(100);
     const { genre } = useParams();
     function movePotentialBar() {
@@ -87,24 +85,16 @@ export function UnlimitedHeardle({ db }) {
         setSectionColors([CURRENT, FUTURE, FUTURE, FUTURE, FUTURE, FUTURE])
     }
     function nextSong() {
-        resetStates()
-        var idx = -1;
-        for (var i = 0; i < videos.length; i++) {
-            if (videos[i].title === video.title) {
-                idx = i;
-                break;
-            }
-        }
-        if (idx > -1) {
-            videos.splice(idx, 1);
-            setVideos(videos);
-        }
-        getRandomVideo(videos);
+        resetStates();
+        removeVideo(video, videos, {setVideos});
+        getRandomVideo(videos, {setVideo, setTitles})
     }
     async function restartGame() {
         resetStates();
+        setScore(0);
         setVideos(originalVideos);
-        getRandomVideo(originalVideos)
+        setOriginalVideos(JSON.parse(JSON.stringify(originalVideos)));
+        getRandomVideo(originalVideos, {setVideo, setTitles});
     }
     useEffect(() => { gameStart(); }, [])
     const gameStart = async () => {
@@ -119,30 +109,9 @@ export function UnlimitedHeardle({ db }) {
         const daily = docSnap.data();
         setVideos(daily.videos);
         setOriginalVideos(JSON.parse(JSON.stringify(daily.videos)));
-        getRandomVideo(daily.videos)
+        getRandomVideo(daily.videos, {setVideo, setTitles});
     }
 
-    function handleLoad() {
-        if (cookies.volume && document.getElementById("secretVideo")) {
-            var youtubeEmbedWindow = document.getElementById("secretVideo").contentWindow;
-            var data = { event: 'command', func: 'setVolume', args: [cookies.volume] }
-            var message = JSON.stringify(data);
-            youtubeEmbedWindow.postMessage(message, '*');
-          }
-        if (document.getElementById("secretVideo")) {
-            setVideoLoaded(true);
-        }
-    }
-
-    async function getRandomVideo(videos) {
-        var randomVideo = videos[getRandomInt(videos.length)];
-        var time;
-        var response = await axios.get(`https://youtube.googleapis.com/youtube/v3/videos?part=snippet%2CcontentDetails&id=${randomVideo.videoId}&key=${API_KEY}`);
-        var timeString = response.data.items[0].contentDetails.duration;
-        time = moment.duration(timeString, moment.ISO_8601).asSeconds();
-        setVideo({ title: randomVideo.title, maxTime: time, videoId: randomVideo.videoId });
-        setTitles(videos.map(video => video.title))
-    }
     return (
         <div className="App" class="h-screen bg-[#1e293b]">
             <Sidebar />
@@ -156,7 +125,7 @@ export function UnlimitedHeardle({ db }) {
                             Score {score} / {originalVideos.length}
                         </p>
                         <Attempts attemptDetails={attemptDetails} />
-                        <iframe id="secretVideo" width="0" height="0" src={`https://www.youtube.com/embed/${video.videoId}?&enablejsapi=1`} title="YouTube video player" frameborder="0" allow="autoplay" allowfullscreen onLoad={handleLoad} />
+                        <iframe id="secretVideo" width="0" height="0" src={`https://www.youtube.com/embed/${video.videoId}?&enablejsapi=1`} title="YouTube video player" frameborder="0" allow="autoplay" allowfullscreen onLoad={()=> handleLoad({cookies, setVideoLoaded})} />
                     </>
                     :
                     <>
