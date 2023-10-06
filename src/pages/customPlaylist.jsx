@@ -87,7 +87,7 @@ export function CustomPlaylist({ db }) {
         setAttemptDetails(JSON.parse(JSON.stringify(EMPTY_ATTEMPTS)));
         setSkip(1);
         setVideoLoaded(false);
-        setSongBar({ duration: DURATION[count], width: 0, });
+        setSongBar({ duration:0, width: 0, });
         setSectionColors([CURRENT, FUTURE, FUTURE, FUTURE, FUTURE, FUTURE])
     }
     function nextSong() {
@@ -181,7 +181,7 @@ export function CustomPlaylist({ db }) {
                     <>
                         <p class="text-white"> Score {score} / {originalVideos.length}
                         </p> <Attempts attemptDetails={attemptDetails} />
-                        <iframe id="secretVideo" width="0" height="0" src={`https://www.youtube.com/embed/${video.videoId}?&enablejsapi=1`} title="YouTube video player" frameborder="0" allow="autoplay" allowfullscreen onLoad={() => handleLoad({cookies, setVideoLoaded})}/>
+                        <iframe id="secretVideo" width="560" height="310" src={`https://www.youtube.com/embed/${video.videoId}?&enablejsapi=1`} title="YouTube video player" frameborder="0" allow="autoplay" allowfullscreen onLoad={() => handleLoad({cookies, setVideoLoaded})}/>
                     </>
                     :
                     <>
