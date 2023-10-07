@@ -13,6 +13,9 @@ module.exports = {
         'footer': '200px minmax(900px, 1fr) 100px',
       }
     },
+    screens: {
+      'sm': '375px'
+    }
   },
   plugins: [],
 }

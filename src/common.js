@@ -9,25 +9,26 @@ export function isToday(someDate) {
     someDate.getMonth() === today.getMonth() &&
     someDate.getFullYear() === today.getFullYear()
 }
-export function ytSetVolume(value) {
+export function ytSetVolume(volume) {
   var youtubeEmbedWindow = document.getElementById("secretVideo").contentWindow;
-  var data = { event: 'command', func: 'setVolume', args: [value] }
+  var data = { event: 'command', func: 'setVolume', args: [volume] }
   var message = JSON.stringify(data);
   youtubeEmbedWindow.postMessage(message, '*');
 }
 
-export function handleLoad({ cookies, setVideoLoaded }) {
-  if (cookies.volume && document.getElementById("secretVideo")) {
-    ytSetVolume(cookies.volume);
-  }
-  if (cookies.states && document.getElementById("secretVideo")) {
+export function ytSetStartTime(startTime) {
     var youtubeEmbedWindow = document.getElementById("secretVideo").contentWindow;
-    var data = { event: 'command', func: 'seekTo', args: [cookies.states.startTime, true] }
+    var data = { event: 'command', func: 'seekTo', args: [startTime, true] }
     var message = JSON.stringify(data);
     youtubeEmbedWindow.postMessage(message, '*');
     youtubeEmbedWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
-  }
+}
+
+export function handleLoad({ cookies, setVideoLoaded }) {
   if (document.getElementById("secretVideo")) {
+    if (cookies.volume) ytSetVolume(cookies.volume);
+    var startTime  = cookies.states ? cookies.states.startTime : 1;
+    ytSetStartTime(startTime);
     setVideoLoaded(true);
   }
 }
