@@ -8,17 +8,6 @@ import { setDoc, doc } from 'firebase/firestore';
 // Gonna move all this crap when we have different pages
 function App({ db }) {
   const [cookies, setCookies] = useCookies(['user'])
-  useEffect(() => {
-    const checkUUID = async () => {
-      if (!cookies.uuid2) {
-        const uuid = uuidv4();
-        setCookies('uuid2', uuid, { expires: new Date(new Date().setFullYear(2024)), path: '/' })
-        const docRef = doc(db, "users", uuid);
-        await setDoc(docRef, { uuid: uuid })
-      }
-    }
-    checkUUID();
-  }, [])
   return (
     <div className="App" class="h-screen bg-[#1e293b] ">
       <Sidebar />

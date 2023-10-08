@@ -115,12 +115,6 @@ export function DailyHeardle({ db }) {
   }
   useEffect(() => { gameStart(); }, [])
   const gameStart = async () => {
-    if (!cookies.uuid) {
-      const uuid = uuidv4();
-      setCookies('uuid', uuid, { expires: new Date(new Date().setFullYear(2024)), path: '/' })
-      const docRef = doc(db, "users", uuid);
-      await setDoc(docRef, { uuid: uuid })
-    }
     if (cookies.states) {
       setAttemptDetails(cookies.states.attemptDetails);
       setStartTime(cookies.states.startTime);

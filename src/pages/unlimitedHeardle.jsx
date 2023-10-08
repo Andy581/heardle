@@ -98,12 +98,6 @@ export function UnlimitedHeardle({ db }) {
     }
     useEffect(() => { gameStart(); }, [])
     const gameStart = async () => {
-        if (!cookies.uuid) {
-            const uuid = uuidv4();
-            setCookies('uuid', uuid, { expires: new Date(new Date().setFullYear(2024)), path: '/' })
-            const docRef = doc(db, "users", uuid);
-            await setDoc(docRef, { uuid: uuid })
-        }
         const docRef = doc(db, "dailyHeardle", genre);
         const docSnap = await getDoc(docRef);
         const daily = docSnap.data();
