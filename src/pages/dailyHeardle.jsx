@@ -38,6 +38,7 @@ export function DailyHeardle({ db }) {
   const [curDay, setCurDay] = useState(new Date().getDate());
   const [cookies, setCookies] = useCookies(['user']);
   const [volume, setVolume] = useState(100);
+  const [copied, setCopied] = useState(false);
   const { genre } = useParams();
   function movePotentialBar() {
     sectionColors[count] = PAST;
@@ -177,6 +178,21 @@ export function DailyHeardle({ db }) {
       videos: data.map(data => { return { title: data.snippet.title, videoId: data.snippet.resourceId.videoId } })
     });
   }
+  function handleCopy() {
+    var res = "Kpop Heardle" + moment().format("MMM Do YYYY") + "\n";  
+    var colorHash = {
+      '#808080': '⬛️',
+      '#ff0000': '🟥',
+      '#008000': '🟩',
+      '#ffffff': '⬜️',
+    }
+    attemptDetails.forEach(attempt => {
+        res += colorHash[attempt.color] + " "
+    });
+    navigator.clipboard.writeText(res);
+    setCopied(true);
+
+  }
   return (
     <div class="h-screen bg-[#1e293b] ">
       <Sidebar />
@@ -196,6 +212,15 @@ export function DailyHeardle({ db }) {
               <Results startTime={startTime} isCorrect={correct} attemptDetails={attemptDetails} count={count} />
             </div>
             <Countdown restartGame={restartGame} />
+            {
+              copied && <p class="text-[#85a5bb]"> Copied to Clipboard </p>
+            }
+            <button class="bg-[#bf616a]  text-white font-bold py-2 px-4 rounded"
+                  onClick={handleCopy}
+                >
+                  SHARE
+                </button>
+            
           </>
         }
       </div>
