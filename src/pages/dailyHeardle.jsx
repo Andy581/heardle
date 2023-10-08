@@ -16,7 +16,6 @@ import { API_KEY, CURRENT, PAST, FUTURE, SKIPPED, WRONG, CORRECT, EMPTY_ATTEMPTS
 import { StartTimeSlider, VolumeSlider } from '../components/sliders';
 import { Sidebar } from '../components/sidebar';
 import { useCookies } from 'react-cookie';
-import { v4 as uuidv4 } from 'uuid';
 
 export function DailyHeardle({ db }) {
   const Ref = useRef(null);
@@ -173,13 +172,14 @@ export function DailyHeardle({ db }) {
     });
   }
   function handleCopy() {
-    var res = "Kpop Heardle" + moment().format("MMM Do YYYY") + "\n";  
+    var res = "Kpop Heardle " + moment().format("MMM Do YYYY") + "\n";  
     var colorHash = {
-      '#808080': '⬛️',
+      '#808080': '⬛',
       '#ff0000': '🟥',
       '#008000': '🟩',
-      '#ffffff': '⬜️',
+      '#ffffff': '⬜',
     }
+    console.log(attemptDetails);
     attemptDetails.forEach(attempt => {
         res += colorHash[attempt.color] + " "
     });
