@@ -183,6 +183,7 @@ export function DailyHeardle({ db }) {
     attemptDetails.forEach(attempt => {
         res += colorHash[attempt.color] + " "
     });
+    res += "\n https://ytheardle.netlify.app/daily/kpop"
     navigator.clipboard.writeText(res);
     setCopied(true);
 

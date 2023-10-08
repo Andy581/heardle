@@ -7,16 +7,6 @@ export default function PlayButton({ setSliderDisabled, setSongBar, startTime, d
     const [isPlaying, setIsPlaying] = useState(false);
     const youtubeEmbedWindow = document.querySelector('iframe[src*="youtube.com/embed"]').contentWindow;
     function handlePlay() {
-        if (cookies.states) {
-            var data = { event: 'command', func: 'seekTo', args: [cookies.states.startTime, true] }
-            var message = JSON.stringify(data);
-            youtubeEmbedWindow.postMessage(message, '*');
-        }
-        if (cookies.volume) {
-            var data = { event: 'command', func: 'setVolume', args: [cookies.volume] }
-            var message = JSON.stringify(data);
-            youtubeEmbedWindow.postMessage(message, '*');
-        }
         setSliderDisabled(true);
         youtubeEmbedWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
         setTimeout(() => {
