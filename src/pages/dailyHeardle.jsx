@@ -21,7 +21,7 @@ import { v4 as uuidv4 } from 'uuid';
 export function DailyHeardle({ db }) {
   const Ref = useRef(null);
   const [correct, setCorrect] = useState(false);
-  const [startTime, setStartTime] = useState(0);
+  const [startTime, setStartTime] = useState(1);
   const [sliderDisabled, setSliderDisabled] = useState(false);
   const [videoLoaded, setVideoLoaded] = useState(false);
   const [attemptDetails, setAttemptDetails] = useState(JSON.parse(JSON.stringify(EMPTY_ATTEMPTS)))
@@ -96,7 +96,7 @@ export function DailyHeardle({ db }) {
   }
   async function restartGame() {
     setCorrect(false);
-    setStartTime(0);
+    setStartTime(1);
     setSliderDisabled(false);
     setGameEnded(false);
     setCount(0);
@@ -203,7 +203,9 @@ export function DailyHeardle({ db }) {
         {!gameEnded ?
           <>
             <Attempts attemptDetails={attemptDetails} />
-            <iframe id="secretVideo" width="0" height="0" src={`https://www.youtube.com/embed/${video.videoId}?&enablejsapi=1`} title="YouTube video player" frameborder="0" allow="autoplay" allowfullscreen onLoad={()=> handleLoad({cookies, setVideoLoaded})} />
+            <div class="hidden">
+              <iframe id="secretVideo" width="560" height="315" src={`https://www.youtube.com/embed/${video.videoId}?&enablejsapi=1`} title="YouTube video player" frameborder="0" allow="autoplay" allowfullscreen onLoad={()=> handleLoad({cookies, setVideoLoaded})} />
+            </div>
           </>
           :
           <>

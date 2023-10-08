@@ -16,7 +16,7 @@ import { v4 as uuidv4 } from 'uuid';
 export function UnlimitedHeardle({ db }) {
     const [score, setScore] = useState(0);
     const [videos, setVideos] = useState([]);
-    const [startTime, setStartTime] = useState(0);
+    const [startTime, setStartTime] = useState(1);
     const [sliderDisabled, setSliderDisabled] = useState(false);
     const [videoLoaded, setVideoLoaded] = useState(false);
     const [attemptDetails, setAttemptDetails] = useState(JSON.parse(JSON.stringify(EMPTY_ATTEMPTS)))
@@ -74,7 +74,7 @@ export function UnlimitedHeardle({ db }) {
         movePotentialBar();
     }
     function resetStates() {
-        setStartTime(0);
+        setStartTime(1);
         setSliderDisabled(false);
         setGameEnded(false);
         setCount(0);
