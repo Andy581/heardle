@@ -4,7 +4,7 @@ import Title from "../components/title";
 import axios from "axios";
 import isUrlHttp from "is-url-http";
 import { API_KEY, CURRENT, PAST, FUTURE, SKIPPED, WRONG, CORRECT, EMPTY_ATTEMPTS, DURATION } from '../constants';
-import { getRandomVideo, handleLoad } from "../common";
+import { getRandomVideo, handleLoad, handleAsk } from "../common";
 import Attempts from "../components/attempt";
 import { StartTimeSlider, VolumeSlider } from "../components/sliders";
 import PlayButton from "../components/playButton";
@@ -12,9 +12,7 @@ import GameBar from "../components/gameBar";
 import Autocomplete from "../components/autocomplete";
 import { Loading } from "../components/svg";
 import { useCookies } from "react-cookie";
-import { v4 as uuidv4 } from 'uuid';
-import { doc, setDoc } from 'firebase/firestore';
-export function CustomPlaylist({ db }) {
+export function CustomPlaylist() {
     const [cookies, setCookies] = useCookies(['user'])
     const [playlistLink, setPlaylistLink] = useState('');
     const [hidden, setHidden] = useState(false);
@@ -40,6 +38,7 @@ export function CustomPlaylist({ db }) {
         invalid: false,
         reason: "",
     })
+    const [copied, setCopied] = useState(false);
     function movePotentialBar() {
         sectionColors[count] = PAST;
         sectionColors[count + 1] = CURRENT;
@@ -89,6 +88,7 @@ export function CustomPlaylist({ db }) {
         setVideoLoaded(false);
         setSongBar({ duration:0, width: 0, });
         setSectionColors([CURRENT, FUTURE, FUTURE, FUTURE, FUTURE, FUTURE])
+        setCopied(false);
     }
     function nextSong() {
         resetStates()
@@ -125,12 +125,6 @@ export function CustomPlaylist({ db }) {
         gameStart(id);
     }
     async function gameStart(id) {
-        if (!cookies.uuid) {
-            const uuid = uuidv4();
-            setCookies('uuid', uuid, { expires: new Date(new Date().setFullYear(2024)), path: '/' })
-            const docRef = doc(db, "users", uuid);
-            await setDoc(docRef, { uuid: uuid })
-        }
         var pageInfo;
         var nextPageToken = '';
         var playlist = await axios.get(`https://youtube.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=${id}&key=${API_KEY}`, { validateStatus: false });
@@ -212,9 +206,17 @@ export function CustomPlaylist({ db }) {
                         <div class="w-2/6 flex justify-between">
                             <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded disabled:opacity-25 disabled:bg-blue-500" disabled={!hidden} onClick={handleSkip} > Skip ({skip}s)
                             </button>
+                            <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                                    onClick={() => handleAsk(video.videoId, startTime, count, sectionColors, {setCopied})}
+                                >
+                                     Ask a friend
+                                </button>
                             <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded disabled:opacity-25 disabled:bg-blue-500" disabled={input === '' || !titles.find((title) => title === input)} onClick={handleGuess} >
                                 Submit </button>
                         </div>
+                        {
+                                copied && <p class="text-[#85a5bb]" > Copied to Clipboard </p>
+                            }
                     </>
                     :
                     <PlayButton duration={video.maxTime} gameEnded={gameEnded} setSliderDisabled={setSliderDisabled} setSongBar={setSongBar} startTime={startTime} />

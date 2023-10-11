@@ -11,6 +11,7 @@ import { initializeApp } from 'firebase/app';
 import { CustomPlaylist } from './pages/customPlaylist';
 import { G_TAG } from './constants';
 import ReactGA from "react-ga4";
+import { HelpFriend } from './pages/helpFriend';
 
 ReactGA.initialize(G_TAG);
 const root = ReactDOM.createRoot(document.getElementById('root'));
@@ -40,7 +41,11 @@ const router = createBrowserRouter([
   },
   {
     path: "/customPlaylist",
-    element: <CustomPlaylist db={db}/>
+    element: <CustomPlaylist />
+  },
+  {
+    path: "/help/:videoId/:startTime/:count/:sectionColors",
+    element: <HelpFriend/>
   }
 ])
 root.render(

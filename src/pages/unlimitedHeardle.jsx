@@ -5,14 +5,13 @@ import { useState, useEffect } from 'react';
 import PlayButton from '../components/playButton';
 import Autocomplete from '../components/autocomplete';
 import { Loading } from '../components/svg';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
-import { handleLoad, getRandomVideo, removeVideo } from '../common';
+import { doc, getDoc } from 'firebase/firestore';
+import { handleLoad, getRandomVideo, removeVideo, handleAsk } from '../common';
 import { CURRENT, PAST, FUTURE, SKIPPED, WRONG, CORRECT, EMPTY_ATTEMPTS, DURATION } from '../constants';
 import { StartTimeSlider, VolumeSlider } from '../components/sliders';
 import { useParams } from 'react-router-dom';
 import { Sidebar } from '../components/sidebar';
 import { useCookies } from 'react-cookie';
-import { v4 as uuidv4 } from 'uuid';
 export function UnlimitedHeardle({ db }) {
     const [score, setScore] = useState(0);
     const [videos, setVideos] = useState([]);
@@ -33,6 +32,7 @@ export function UnlimitedHeardle({ db }) {
     const [video, setVideo] = useState({ videoId: '', maxTime: 0, title: 'dummyTitle' });
     const [originalVideos, setOriginalVideos] = useState([{videoId: '', title: ''}]);
     const [volume, setVolume] = useState(100);
+    const [copied, setCopied] = useState(false);
     const { genre } = useParams();
     function movePotentialBar() {
         sectionColors[count] = PAST;
@@ -83,6 +83,7 @@ export function UnlimitedHeardle({ db }) {
         setVideoLoaded(false);
         setSongBar({ duration:0, width: 0, });
         setSectionColors([CURRENT, FUTURE, FUTURE, FUTURE, FUTURE, FUTURE])
+        setCopied(false);
     }
     function nextSong() {
         resetStates();
@@ -167,12 +168,20 @@ export function UnlimitedHeardle({ db }) {
                                 >
                                     Skip ({skip}s)
                                 </button>
+                                <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                                    onClick={() => handleAsk(video.videoId, startTime, count, sectionColors, {setCopied})}
+                                >
+                                     Ask a friend
+                                </button>
                                 <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded disabled:opacity-25 disabled:bg-blue-500"
                                     disabled={input === '' || !titles.find((title) => title === input)}
                                     onClick={handleGuess} >
                                     Submit
                                 </button>
                             </div>
+                            {
+                                copied && <p class="text-[#85a5bb]" > Copied to Clipboard </p>
+                            }
                         </>
                         :
                         <PlayButton
