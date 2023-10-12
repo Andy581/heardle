@@ -172,7 +172,8 @@ export function DailyHeardle({ db }) {
     });
   }
   function handleCopy() {
-    var res = "Kpop Heardle " + moment().format("MMM Do YYYY") + "\n";  
+    var title = genre === "kpop" ? "Kpop" : "Taylor Swift"
+    var res = title + " Heardle " + moment().format("MMM Do YYYY") + "\n";  
     var colorHash = {
       '#808080': '⬛',
       '#ff0000': '🟥',
@@ -183,7 +184,7 @@ export function DailyHeardle({ db }) {
     attemptDetails.forEach(attempt => {
         res += colorHash[attempt.color] + " "
     });
-    res += "\n https://ytheardle.netlify.app/daily/kpop"
+    res += "\n https://ytheardle.netlify.app/daily/"+genre
     navigator.clipboard.writeText(res);
     setCopied(true);
 
