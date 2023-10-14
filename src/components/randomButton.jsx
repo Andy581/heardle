@@ -1,8 +1,10 @@
-import { getRandomInt } from "../common"
+import { getRandomInt, ytSetStartTime } from "../common"
 
 export function RandomButton({maxTime, setStartTime, sliderDisabled}) {
     function handleRandom() {
-        setStartTime(getRandomInt(maxTime));
+        var startTime = getRandomInt(maxTime);
+        setStartTime(startTime);
+        ytSetStartTime(startTime);
     }
     return (
         <button onClick={handleRandom} disabled={sliderDisabled}>

@@ -177,7 +177,6 @@ export function CustomPlaylist() {
                         <p class="text-white"> Score {score} / {originalVideos.length}
                         </p> <Attempts attemptDetails={attemptDetails} />
                         <div class="hidden">
-
                             <iframe id="secretVideo" width="560" height="360" src={`https://www.youtube.com/embed/${video.videoId}?&enablejsapi=1`} title="YouTube video player" frameborder="0" allow="autoplay" allowfullscreen onLoad={() => handleLoad({ cookies, setVideoLoaded })} />
                         </div>
                     </>
@@ -198,11 +197,13 @@ export function CustomPlaylist() {
             <div className="Game" class="fixed  inset-x-0 bottom-0 min-h-[23%] flex flex-col items-center space-y-4">
                 <GameBar duration={DURATION[count]} songBar={songBar} sectionColors={sectionColors} />
                 <StartTimeSlider startTime={startTime} setStartTime={setStartTime} sliderDisabled={sliderDisabled} video={video} />
-                <RandomButton sliderDisabled={sliderDisabled} setStartTime={setStartTime} maxTime={video.maxTime}/>
                 {!gameEnded ?
                     <>
                         {videoLoaded ?
+                            <div class="flex flex-col space-y-4">
+                            <RandomButton sliderDisabled={sliderDisabled} setStartTime={setStartTime} maxTime={video.maxTime}/>
                             <PlayButton duration={DURATION[count]} gameEnded={gameEnded} setSliderDisabled={setSliderDisabled} setSongBar={setSongBar} startTime={startTime} />
+                            </div>
                             :
                             <Loading />
                         }

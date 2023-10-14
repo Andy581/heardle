@@ -226,12 +226,13 @@ export function DailyHeardle({ db }) {
       <div className="Game" class="fixed  inset-x-0 bottom-0 min-h-[23%] flex flex-col items-center space-y-4">
         <GameBar duration={DURATION[count]} songBar={songBar} sectionColors={sectionColors} />
         <StartTimeSlider startTime={startTime} setStartTime={setStartTime} sliderDisabled={sliderDisabled} video={video} />
-        <RandomButton maxTime={video.maxTime} setStartTime={setStartTime} sliderDisabled={sliderDisabled}/>
         {
           !gameEnded ?
             <>
-              <div class="space-x-4">
-                {videoLoaded ?
+              {videoLoaded ?
+                <div class="flex flex-col space-y-4">
+                  <RandomButton maxTime={video.maxTime} setStartTime={setStartTime} sliderDisabled={sliderDisabled} />
+
                   <PlayButton
                     duration={DURATION[count]}
                     gameEnded={gameEnded}
@@ -239,10 +240,10 @@ export function DailyHeardle({ db }) {
                     setSongBar={setSongBar}
                     startTime={startTime}
                   />
-                  :
-                  <Loading />
-                }
-              </div>
+                </div>
+                :
+                <Loading />
+              }
               <VolumeSlider volume={volume} setVolume={setVolume} />
               <Autocomplete userInput={input} setUserInput={setInput} suggestions={titles} handleGuess={handleGuess} />
               <div class="w-2/6 flex justify-between">

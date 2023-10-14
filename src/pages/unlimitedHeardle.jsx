@@ -31,7 +31,7 @@ export function UnlimitedHeardle({ db }) {
     const [titles, setTitles] = useState([]);
     const [cookies, setCookies] = useCookies(['user']);
     const [video, setVideo] = useState({ videoId: '', maxTime: 0, title: 'dummyTitle' });
-    const [originalVideos, setOriginalVideos] = useState([{videoId: '', title: ''}]);
+    const [originalVideos, setOriginalVideos] = useState([{ videoId: '', title: '' }]);
     const [volume, setVolume] = useState(100);
     const [copied, setCopied] = useState(false);
     const { genre } = useParams();
@@ -82,21 +82,21 @@ export function UnlimitedHeardle({ db }) {
         setAttemptDetails(JSON.parse(JSON.stringify(EMPTY_ATTEMPTS)));
         setSkip(1);
         setVideoLoaded(false);
-        setSongBar({ duration:0, width: 0, });
+        setSongBar({ duration: 0, width: 0, });
         setSectionColors([CURRENT, FUTURE, FUTURE, FUTURE, FUTURE, FUTURE])
         setCopied(false);
     }
     function nextSong() {
         resetStates();
-        removeVideo(video, videos, {setVideos});
-        getRandomVideo(videos, {setVideo, setTitles})
+        removeVideo(video, videos, { setVideos });
+        getRandomVideo(videos, { setVideo, setTitles })
     }
     async function restartGame() {
         resetStates();
         setScore(0);
         setVideos(originalVideos);
         setOriginalVideos(JSON.parse(JSON.stringify(originalVideos)));
-        getRandomVideo(originalVideos, {setVideo, setTitles});
+        getRandomVideo(originalVideos, { setVideo, setTitles });
     }
     useEffect(() => { gameStart(); }, [])
     const gameStart = async () => {
@@ -105,7 +105,7 @@ export function UnlimitedHeardle({ db }) {
         const daily = docSnap.data();
         setVideos(daily.videos);
         setOriginalVideos(JSON.parse(JSON.stringify(daily.videos)));
-        getRandomVideo(daily.videos, {setVideo, setTitles});
+        getRandomVideo(daily.videos, { setVideo, setTitles });
     }
 
     return (
@@ -121,7 +121,9 @@ export function UnlimitedHeardle({ db }) {
                             Score {score} / {originalVideos.length}
                         </p>
                         <Attempts attemptDetails={attemptDetails} />
-                        <iframe id="secretVideo" width="0" height="0" src={`https://www.youtube.com/embed/${video.videoId}?&enablejsapi=1`} title="YouTube video player" frameborder="0" allow="autoplay" allowfullscreen onLoad={()=> handleLoad({cookies, setVideoLoaded})} />
+                        <div class="hidden">
+                            <iframe id="secretVideo" width="560" height="360" src={`https://www.youtube.com/embed/${video.videoId}?&enablejsapi=1`} title="YouTube video player" frameborder="0" allow="autoplay" allowfullscreen onLoad={() => handleLoad({ cookies, setVideoLoaded })} />
+                        </div>
                     </>
                     :
                     <>
@@ -147,18 +149,21 @@ export function UnlimitedHeardle({ db }) {
             <div className="Game" class="fixed  inset-x-0 bottom-0 min-h-[23%] flex flex-col items-center space-y-4">
                 <GameBar duration={DURATION[count]} songBar={songBar} sectionColors={sectionColors} />
                 <StartTimeSlider startTime={startTime} setStartTime={setStartTime} sliderDisabled={sliderDisabled} video={video} />
-                <RandomButton sliderDisabled={sliderDisabled} setStartTime={setStartTime} maxTime={video.maxTime}/>
                 {
                     !gameEnded ?
                         <>
                             {videoLoaded ?
-                                <PlayButton
-                                    duration={DURATION[count]}
-                                    gameEnded={gameEnded}
-                                    setSliderDisabled={setSliderDisabled}
-                                    setSongBar={setSongBar}
-                                    startTime={startTime}
-                                />
+                                <div class="flex flex-col space-y-4">
+
+                                    <RandomButton sliderDisabled={sliderDisabled} setStartTime={setStartTime} maxTime={video.maxTime} />
+                                    <PlayButton
+                                        duration={DURATION[count]}
+                                        gameEnded={gameEnded}
+                                        setSliderDisabled={setSliderDisabled}
+                                        setSongBar={setSongBar}
+                                        startTime={startTime}
+                                    />
+                                </div>
                                 :
                                 <Loading />
                             }
@@ -171,9 +176,9 @@ export function UnlimitedHeardle({ db }) {
                                     Skip ({skip}s)
                                 </button>
                                 <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                                    onClick={() => handleAsk(video.videoId, startTime, count, sectionColors, {setCopied})}
+                                    onClick={() => handleAsk(video.videoId, startTime, count, sectionColors, { setCopied })}
                                 >
-                                     Ask a friend
+                                    Ask a friend
                                 </button>
                                 <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded disabled:opacity-25 disabled:bg-blue-500"
                                     disabled={input === '' || !titles.find((title) => title === input)}
