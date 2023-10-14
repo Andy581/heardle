@@ -86,7 +86,7 @@ export function CustomPlaylist() {
         setAttemptDetails(JSON.parse(JSON.stringify(EMPTY_ATTEMPTS)));
         setSkip(1);
         setVideoLoaded(false);
-        setSongBar({ duration:0, width: 0, });
+        setSongBar({ duration: 0, width: 0, });
         setSectionColors([CURRENT, FUTURE, FUTURE, FUTURE, FUTURE, FUTURE])
         setCopied(false);
     }
@@ -103,7 +103,7 @@ export function CustomPlaylist() {
             videos.splice(idx, 1);
             setVideos(videos);
         }
-        getRandomVideo(videos, {setVideo, setTitles});
+        getRandomVideo(videos, { setVideo, setTitles });
 
     }
     async function restartGame() {
@@ -111,7 +111,7 @@ export function CustomPlaylist() {
         setVideos(originalVideos);
         setOriginalVideos(JSON.parse(JSON.stringify(originalVideos)));
         setScore(0);
-        getRandomVideo(originalVideos, {setVideo, setTitles});
+        getRandomVideo(originalVideos, { setVideo, setTitles });
     }
     async function handleModal() {
         if (!isUrlHttp(playlistLink)) { setInvalid({ invalid: true, reason: "Invalid URL" }); return; }
@@ -140,7 +140,7 @@ export function CustomPlaylist() {
         videos = videos.map((video) => { return { videoId: video.snippet.resourceId.videoId, title: video.snippet.title } });
         setOriginalVideos(JSON.parse(JSON.stringify(videos)));
         setVideos(videos);
-        getRandomVideo(videos, {setVideo, setTitles});
+        getRandomVideo(videos, { setVideo, setTitles });
 
     }
     return (
@@ -175,7 +175,10 @@ export function CustomPlaylist() {
                     <>
                         <p class="text-white"> Score {score} / {originalVideos.length}
                         </p> <Attempts attemptDetails={attemptDetails} />
-                        <iframe id="secretVideo" width="0" height="0" src={`https://www.youtube.com/embed/${video.videoId}?&enablejsapi=1`} title="YouTube video player" frameborder="0" allow="autoplay" allowfullscreen onLoad={() => handleLoad({cookies, setVideoLoaded})}/>
+                        <div class="hidden">
+
+                            <iframe id="secretVideo" width="560" height="360" src={`https://www.youtube.com/embed/${video.videoId}?&enablejsapi=1`} title="YouTube video player" frameborder="0" allow="autoplay" allowfullscreen onLoad={() => handleLoad({ cookies, setVideoLoaded })} />
+                        </div>
                     </>
                     :
                     <>
@@ -207,16 +210,16 @@ export function CustomPlaylist() {
                             <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded disabled:opacity-25 disabled:bg-blue-500" disabled={!hidden} onClick={handleSkip} > Skip ({skip}s)
                             </button>
                             <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                                    onClick={() => handleAsk(video.videoId, startTime, count, sectionColors, {setCopied})}
-                                >
-                                     Ask a friend
-                                </button>
+                                onClick={() => handleAsk(video.videoId, startTime, count, sectionColors, { setCopied })}
+                            >
+                                Ask a friend
+                            </button>
                             <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded disabled:opacity-25 disabled:bg-blue-500" disabled={input === '' || !titles.find((title) => title === input)} onClick={handleGuess} >
                                 Submit </button>
                         </div>
                         {
-                                copied && <p class="text-[#85a5bb]" > Copied to Clipboard </p>
-                            }
+                            copied && <p class="text-[#85a5bb]" > Copied to Clipboard </p>
+                        }
                     </>
                     :
                     <PlayButton duration={video.maxTime} gameEnded={gameEnded} setSliderDisabled={setSliderDisabled} setSongBar={setSongBar} startTime={startTime} />
