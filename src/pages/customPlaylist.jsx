@@ -12,6 +12,7 @@ import GameBar from "../components/gameBar";
 import Autocomplete from "../components/autocomplete";
 import { Loading } from "../components/svg";
 import { useCookies } from "react-cookie";
+import { RandomButton } from "../components/randomButton";
 export function CustomPlaylist() {
     const [cookies, setCookies] = useCookies(['user'])
     const [playlistLink, setPlaylistLink] = useState('');
@@ -197,6 +198,7 @@ export function CustomPlaylist() {
             <div className="Game" class="fixed  inset-x-0 bottom-0 min-h-[23%] flex flex-col items-center space-y-4">
                 <GameBar duration={DURATION[count]} songBar={songBar} sectionColors={sectionColors} />
                 <StartTimeSlider startTime={startTime} setStartTime={setStartTime} sliderDisabled={sliderDisabled} video={video} />
+                <RandomButton sliderDisabled={sliderDisabled} setStartTime={setStartTime} maxTime={video.maxTime}/>
                 {!gameEnded ?
                     <>
                         {videoLoaded ?

@@ -16,6 +16,7 @@ import { API_KEY, CURRENT, PAST, FUTURE, SKIPPED, WRONG, CORRECT, EMPTY_ATTEMPTS
 import { StartTimeSlider, VolumeSlider } from '../components/sliders';
 import { Sidebar } from '../components/sidebar';
 import { useCookies } from 'react-cookie';
+import { RandomButton } from '../components/randomButton';
 
 export function DailyHeardle({ db }) {
   const Ref = useRef(null);
@@ -173,7 +174,7 @@ export function DailyHeardle({ db }) {
   }
   function handleCopy() {
     var title = genre === "kpop" ? "Kpop" : "Taylor Swift"
-    var res = title + " Heardle " + moment().format("MMM Do YYYY") + "\n";  
+    var res = title + " Heardle " + moment().format("MMM Do YYYY") + "\n";
     var colorHash = {
       '#808080': '⬛',
       '#ff0000': '🟥',
@@ -182,9 +183,9 @@ export function DailyHeardle({ db }) {
     }
     console.log(attemptDetails);
     attemptDetails.forEach(attempt => {
-        res += colorHash[attempt.color] + " "
+      res += colorHash[attempt.color] + " "
     });
-    res += "\n https://ytheardle.netlify.app/daily/"+genre
+    res += "\n https://ytheardle.netlify.app/daily/" + genre
     navigator.clipboard.writeText(res);
     setCopied(true);
 
@@ -200,7 +201,7 @@ export function DailyHeardle({ db }) {
           <>
             <Attempts attemptDetails={attemptDetails} />
             <div class="hidden">
-              <iframe id="secretVideo" width="560" height="315" src={`https://www.youtube.com/embed/${video.videoId}?&enablejsapi=1`} title="YouTube video player" frameborder="0" allow="autoplay" allowfullscreen onLoad={()=> handleLoad({cookies, setVideoLoaded})} />
+              <iframe id="secretVideo" width="560" height="315" src={`https://www.youtube.com/embed/${video.videoId}?&enablejsapi=1`} title="YouTube video player" frameborder="0" allow="autoplay" allowfullscreen onLoad={() => handleLoad({ cookies, setVideoLoaded })} />
             </div>
           </>
           :
@@ -214,31 +215,34 @@ export function DailyHeardle({ db }) {
               copied && <p class="text-[#85a5bb]"> Copied to Clipboard </p>
             }
             <button class="bg-[#bf616a]  text-white font-bold py-2 px-4 rounded"
-                  onClick={handleCopy}
-                >
-                  SHARE
-                </button>
-            
+              onClick={handleCopy}
+            >
+              SHARE
+            </button>
+
           </>
         }
       </div>
       <div className="Game" class="fixed  inset-x-0 bottom-0 min-h-[23%] flex flex-col items-center space-y-4">
         <GameBar duration={DURATION[count]} songBar={songBar} sectionColors={sectionColors} />
         <StartTimeSlider startTime={startTime} setStartTime={setStartTime} sliderDisabled={sliderDisabled} video={video} />
+        <RandomButton maxTime={video.maxTime} setStartTime={setStartTime} sliderDisabled={sliderDisabled}/>
         {
           !gameEnded ?
             <>
-              {videoLoaded ?
-                <PlayButton
-                  duration={DURATION[count]}
-                  gameEnded={gameEnded}
-                  setSliderDisabled={setSliderDisabled}
-                  setSongBar={setSongBar}
-                  startTime={startTime}
-                />
-                :
-                <Loading />
-              }
+              <div class="space-x-4">
+                {videoLoaded ?
+                  <PlayButton
+                    duration={DURATION[count]}
+                    gameEnded={gameEnded}
+                    setSliderDisabled={setSliderDisabled}
+                    setSongBar={setSongBar}
+                    startTime={startTime}
+                  />
+                  :
+                  <Loading />
+                }
+              </div>
               <VolumeSlider volume={volume} setVolume={setVolume} />
               <Autocomplete userInput={input} setUserInput={setInput} suggestions={titles} handleGuess={handleGuess} />
               <div class="w-2/6 flex justify-between">

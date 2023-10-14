@@ -12,6 +12,7 @@ import { StartTimeSlider, VolumeSlider } from '../components/sliders';
 import { useParams } from 'react-router-dom';
 import { Sidebar } from '../components/sidebar';
 import { useCookies } from 'react-cookie';
+import { RandomButton } from '../components/randomButton';
 export function UnlimitedHeardle({ db }) {
     const [score, setScore] = useState(0);
     const [videos, setVideos] = useState([]);
@@ -146,6 +147,7 @@ export function UnlimitedHeardle({ db }) {
             <div className="Game" class="fixed  inset-x-0 bottom-0 min-h-[23%] flex flex-col items-center space-y-4">
                 <GameBar duration={DURATION[count]} songBar={songBar} sectionColors={sectionColors} />
                 <StartTimeSlider startTime={startTime} setStartTime={setStartTime} sliderDisabled={sliderDisabled} video={video} />
+                <RandomButton sliderDisabled={sliderDisabled} setStartTime={setStartTime} maxTime={video.maxTime}/>
                 {
                     !gameEnded ?
                         <>
