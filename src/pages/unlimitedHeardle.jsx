@@ -103,8 +103,10 @@ export function UnlimitedHeardle({ db }) {
         const docRef = doc(db, "dailyHeardle", genre);
         const docSnap = await getDoc(docRef);
         const daily = docSnap.data();
-        setVideos(daily.videos);
-        setOriginalVideos(JSON.parse(JSON.stringify(daily.videos)));
+        var videos = daily.videos;
+        videos = [...new Map(videos.map(v => [v.title, v])).values()]
+        setVideos(videos);
+        setOriginalVideos(JSON.parse(JSON.stringify(videos)));
         getRandomVideo(daily.videos, { setVideo, setTitles });
     }
 

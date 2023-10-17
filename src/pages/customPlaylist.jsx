@@ -139,6 +139,7 @@ export function CustomPlaylist() {
             nextPageToken = nextPage.data.nextPageToken;
         }
         videos = videos.map((video) => { return { videoId: video.snippet.resourceId.videoId, title: video.snippet.title } });
+        videos = [...new Map(videos.map(v => [v.title, v])).values()]
         setOriginalVideos(JSON.parse(JSON.stringify(videos)));
         setVideos(videos);
         getRandomVideo(videos, { setVideo, setTitles });
@@ -208,7 +209,7 @@ export function CustomPlaylist() {
                             <Loading />
                         }
                         <VolumeSlider volume={volume} setVolume={setVolume} />
-                        <Autocomplete userInput={input} setUserInput={setInput} suggestions={titles} handleGuess={handleGuess} />
+                        <Autocomplete userInput={input} setUserInput={setInput} suggestions={originalVideos.map((video) => video.title)} handleGuess={handleGuess} />
                         <div class="w-2/6 flex justify-between">
                             <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded disabled:opacity-25 disabled:bg-blue-500" disabled={!hidden} onClick={handleSkip} > Skip ({skip}s)
                             </button>
