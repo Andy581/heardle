@@ -18,7 +18,7 @@ export function VolumeSlider({volume, setVolume}) {
         youtubeEmbedWindow.postMessage(message, '*');
       }
     return (
-        <div class="w-2/6 max-[768px]:w-full flex flex-row">
+        <div class="w-2/6 max-[768px]:w-5/6 flex flex-row">
         <VolumeDown />
         <input type="range" class="w-full" min="0" max="100"
           value={volume}
@@ -40,7 +40,7 @@ export function StartTimeSlider({startTime, setStartTime, sliderDisabled, video}
   }
 
   return (
-    <div class="w-2/6 max-[768px]:w-full flex flex-row">
+    <div class="w-2/6 max-[768px]:w-5/6 flex flex-row">
     <input type="range" class="w-full" min="0" max={video.maxTime} value={startTime}
       onMouseUp={(e) => { handleSliderRelease(e.target.value) }}
       onInput={(e) => { setStartTime(e.target.value) }}
