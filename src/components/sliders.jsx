@@ -18,7 +18,7 @@ export function VolumeSlider({volume, setVolume}) {
         youtubeEmbedWindow.postMessage(message, '*');
       }
     return (
-        <div class="z-10 w-2/6 max-[768px]:w-5/6 flex flex-row">
+        <div class="z-10 w-2/6 max-[768px]:w-0 flex flex-row">
         <VolumeDown />
         <input type="range" class="w-full" min="0" max="100"
           value={volume}
