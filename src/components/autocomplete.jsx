@@ -58,7 +58,7 @@ export default function Autocomplete({ suggestions, userInput, setUserInput, han
           {filteredSuggestions.map((suggestion, index) => {
 
             return (
-              <li style={{backgroundColor: index === activeSuggestion ? '#2d4358' : '#1a2633'}} class="w-full block h-3/6 border border-y-[#999999] text-zinc-50 "  
+              <li style={{backgroundColor: index === activeSuggestion ? '#2d4358' : '#1a2633'}} class="w-full block border border-y-[#999999] text-zinc-50 "  
               onClick={e => handleOnClick(e.currentTarget.innerText)}
               onMouseOver={e => handleHover(e.target.innerText)}
               >
