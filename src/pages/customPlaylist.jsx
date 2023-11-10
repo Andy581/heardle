@@ -219,7 +219,7 @@ export function CustomPlaylist() {
                         }
                         <VolumeSlider volume={volume} setVolume={setVolume} />
                         <Autocomplete userInput={input} setUserInput={setInput} suggestions={originalVideos.map((video) => video.title)} handleGuess={handleGuess} />
-                        <div class="w-2/6 flex justify-between">
+                        <div class="w-2/6 max-[768px]:w-full flex justify-between">
                             <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded disabled:opacity-25 disabled:bg-blue-500" disabled={!hidden} onClick={handleSkip} > Skip ({skip}s)
                             </button>
                             <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
