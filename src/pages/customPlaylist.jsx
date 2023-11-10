@@ -140,6 +140,15 @@ export function CustomPlaylist() {
         }
         videos = videos.map((video) => { return { videoId: video.snippet.resourceId.videoId, title: video.snippet.title } });
         videos = [...new Map(videos.map(v => [v.title, v])).values()]
+        var audioText = ["[Audio]", "「Audio」", "[audio]" , '[AUDIO]', '(Audio)', '「Official Audio」', "[Official Audio]", "(Official Audio)"];
+        for (var i = 0; i < videos.length; i++ ) {
+            for (var j = 0; j < audioText.length; j++) {
+                if (videos[i].title.indexOf(audioText[j]) > 1) {
+                    videos[i].title = videos[i].title.replace(audioText[j], '');
+                    break;
+                }
+            }
+        }
         setOriginalVideos(JSON.parse(JSON.stringify(videos)));
         setVideos(videos);
         getRandomVideo(videos, { setVideo, setTitles });

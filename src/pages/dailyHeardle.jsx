@@ -163,7 +163,17 @@ export function DailyHeardle({ db }) {
     var timeString = response.data.items[0].contentDetails.duration;
     time = moment.duration(timeString, moment.ISO_8601).asSeconds();
     setVideo({ title: title, maxTime: time, videoId: randomVideoId });
-    setTitles(data.map(data => data.snippet.title))
+    var titles = data.map(data => data.snippet.titles);
+    var audioText = ["[Audio]", "「Audio」", "[audio]" , '[AUDIO]', '(Audio)', '「Official Audio」', "[Official Audio]", "(Official Audio)"];
+    for (var i = 0; i < titles.length; i++ ) {
+        for (var j = 0; j < audioText.length; j++) {
+            if (titles[i].indexOf(audioText[j]) > 1) {
+                titles[i] = titles[i].replace(audioText[j], '');
+                break;
+            }
+        }
+    }
+    setTitles(titles)
     await updateDoc(docRef, {
       date: moment().format('MM-DD-YYYY'),
       title: title,
