@@ -145,7 +145,6 @@ export function DailyHeardle({ db }) {
       var data = []
       data = data.concat(playlist.data.items);
       nextPageToken = playlist.data.nextPageToken;
-      console.log("page info ", pageInfo.totalResults)
       for (let i = 1; i < Math.ceil(pageInfo.totalResults / pageInfo.resultsPerPage); i++) {
         var nextPage = await axios.get(`https://youtube.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&pageToken=${nextPageToken}&playlistId=${PLAYLIST_ID[genre]}&key=${API_KEY}`);
         data = data.concat(nextPage.data.items);
@@ -156,31 +155,31 @@ export function DailyHeardle({ db }) {
   }
 
   async function getRandomVideo(data, docRef) {
-    var randomVideoId = data[getRandomInt(data.length)].snippet.resourceId.videoId;
-    var time;
-    var response = await axios.get(`https://youtube.googleapis.com/youtube/v3/videos?part=snippet%2CcontentDetails&id=${randomVideoId}&key=${API_KEY}`);
-    var title = response.data.items[0].snippet.title;
-    var timeString = response.data.items[0].contentDetails.duration;
-    time = moment.duration(timeString, moment.ISO_8601).asSeconds();
-    setVideo({ title: title, maxTime: time, videoId: randomVideoId });
-    var titles = data.map(data => data.snippet.titles);
+    var data2 = data.map(item => ({videoId: item.snippet.resourceId.videoId, title: item.snippet.title}));
     var audioText = ["[Audio]", "「Audio」", "[audio]" , '[AUDIO]', '(Audio)', '「Official Audio」', "[Official Audio]", "(Official Audio)"];
-    for (var i = 0; i < titles.length; i++ ) {
+    for (var i = 0; i < data2.length; i++ ) {
         for (var j = 0; j < audioText.length; j++) {
-            if (titles[i].indexOf(audioText[j]) > 1) {
-                titles[i] = titles[i].replace(audioText[j], '');
+            if (data2[i].title.indexOf(audioText[j]) > 1) {
+                data2[i].title = data2[i].title.replace(audioText[j], '');
                 break;
             }
         }
     }
-    setTitles(titles)
+    setTitles(data2.map(item => item.title));
+    var randomInt = getRandomInt(data2.length);
+    var randomVideoId = data2[randomInt].videoId;
+    var title = data2[randomInt].title;
+    var time;
+    var response = await axios.get(`https://youtube.googleapis.com/youtube/v3/videos?part=snippet%2CcontentDetails&id=${randomVideoId}&key=${API_KEY}`);
+    var timeString = response.data.items[0].contentDetails.duration;
+    time = moment.duration(timeString, moment.ISO_8601).asSeconds();
+    setVideo({ title: title, maxTime: time, videoId: randomVideoId });
     await updateDoc(docRef, {
       date: moment().format('MM-DD-YYYY'),
       title: title,
       maxTime: time,
       videoId: randomVideoId,
-      videos: data.map(data => { return { title: data.snippet.title, videoId: data.snippet.resourceId.videoId } })
-    });
+      videos:  data2 } );
   }
   function handleCopy() {
     var title = genre === "kpop" ? "Kpop" : "Taylor Swift"
@@ -191,7 +190,6 @@ export function DailyHeardle({ db }) {
       '#008000': '🟩',
       '#ffffff': '⬜',
     }
-    console.log(attemptDetails);
     attemptDetails.forEach(attempt => {
       res += colorHash[attempt.color] + " "
     });
