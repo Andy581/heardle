@@ -156,7 +156,7 @@ export function DailyHeardle({ db }) {
 
   async function getRandomVideo(data, docRef) {
     var data2 = data.map(item => ({videoId: item.snippet.resourceId.videoId, title: item.snippet.title}));
-    var audioText = ["[Audio]", "「Audio」", "[audio]" , '[AUDIO]', '(Audio)', '「Official Audio」', "[Official Audio]", "(Official Audio)"];
+    var audioText = ["[Audio]", "「Audio」", "[audio]" , '[AUDIO]', '(Audio)', '「Official Audio」', "[Official Audio]", "(Official Audio)", '(AUDIO)', 'AUDIO', 'Audio', '[MP3 Audio]', '[Full Audio]'];
     for (var i = 0; i < data2.length; i++ ) {
         for (var j = 0; j < audioText.length; j++) {
             if (data2[i].title.indexOf(audioText[j]) > 1) {
