@@ -165,6 +165,7 @@ export function DailyHeardle({ db }) {
                 break;
             }
         }
+        data2[i].title = data2[i].title.trim();
     }
     setTitles(data2.map(item => item.title));
     var randomInt = getRandomInt(data2.length);

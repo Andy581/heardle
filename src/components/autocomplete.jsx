@@ -11,6 +11,7 @@ export default function Autocomplete({ suggestions, userInput, setUserInput, han
     var filteredSuggestions = suggestions.filter(
       suggestion => suggestion.toLowerCase().indexOf(value.toLowerCase()) > -1
     );
+    filteredSuggestions = filteredSuggestions.slice(0,7);
     setFilterSuggestions(filteredSuggestions);
     setShowSuggestion(true);
     setActiveSuggestion(0);
