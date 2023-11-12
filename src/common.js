@@ -30,6 +30,8 @@ export function handleLoad({ cookies, setVideoLoaded }) {
     var startTime = cookies.states ? cookies.states.startTime : 1;
     ytSetStartTime(startTime);
     setVideoLoaded(true);
+    var youtubeEmbedWindow = document.getElementById("secretVideo").contentWindow;
+    youtubeEmbedWindow.postMessage('{"event":"listening","id":1,"channel":"widget"}', '*');
   }
 }
 export async function getRandomVideo(videos, { setVideo, setTitles }) {

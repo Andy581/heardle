@@ -1,21 +1,36 @@
 import React from "react";
 import { useState } from "react";
 import { useCookies } from "react-cookie";
+import { useEffect } from "react";
 
 export default function PlayButton({ setSliderDisabled, setSongBar, startTime, duration, gameEnded }) {
     const [cookies, setCookies] = useCookies(['user']);
     const [isPlaying, setIsPlaying] = useState(false);
     const youtubeEmbedWindow = document.querySelector('iframe[src*="youtube.com/embed"]').contentWindow;
+    useEffect(() => {
+        
+        const handler = (msg) => {
+            if (msg.origin === "https://www.youtube.com" && typeof(msg.data) == "string" && msg.data.length !== 0 && msg.data[0] !== "w"){ 
+                var data = JSON.parse(msg.data);
+                if (data.event && data.event === 'infoDelivery' )  {
+                    var info = data.info;
+                    if (info.currentTime && info.currentTime >= startTime + duration) {
+                        setSongBar({ duration: 0, width: 0 });
+                        var data = { event: 'command', func: 'seekTo', args: [startTime, true] }
+                        var message = JSON.stringify(data);
+                        youtubeEmbedWindow.postMessage(message, '*');
+                        youtubeEmbedWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
+                    }
+                }
+            }
+        }
+        window.addEventListener('message', handler);
+        return () => window.removeEventListener('message', handler);
+
+    })
     function handlePlay() {
         setSliderDisabled(true);
         youtubeEmbedWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
-        setTimeout(() => {
-            setSongBar({ duration: 0, width: 0 });
-            var data = { event: 'command', func: 'seekTo', args: [startTime, true] }
-            var message = JSON.stringify(data);
-            youtubeEmbedWindow.postMessage(message, '*');
-            youtubeEmbedWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
-        }, duration * 1000);
         setSongBar({ duration: duration, width: duration });
     }
     function handlePlay2() {
