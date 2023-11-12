@@ -20,6 +20,7 @@ import { RandomButton } from '../components/randomButton';
 
 export function DailyHeardle({ db }) {
   const Ref = useRef(null);
+  const [filteredSuggestions, setFilterSuggestions] = useState([]);
   const [correct, setCorrect] = useState(false);
   const [startTime, setStartTime] = useState(1);
   const [sliderDisabled, setSliderDisabled] = useState(false);
@@ -252,8 +253,8 @@ export function DailyHeardle({ db }) {
                 :
                 <Loading />
               }
-              <VolumeSlider volume={volume} setVolume={setVolume} />
-              <Autocomplete userInput={input} setUserInput={setInput} suggestions={titles} handleGuess={handleGuess} />
+              <VolumeSlider volume={volume} setVolume={setVolume} suggestions={filteredSuggestions} input={input} />
+              <Autocomplete userInput={input} setUserInput={setInput} suggestions={titles} handleGuess={handleGuess} filteredSuggestions={filteredSuggestions} setFilterSuggestions={setFilterSuggestions}/>
               <div class="w-2/6 max-[768px]:w-full flex justify-between">
                 <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded disabled:opacity-25 disabled:bg-blue-500"
                   onClick={handleSkip}

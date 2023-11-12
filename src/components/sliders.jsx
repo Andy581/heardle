@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { VolumeDown, VolumeUp } from "./svg"
 import { useCookies } from "react-cookie";
-export function VolumeSlider({volume, setVolume}) {
+export function VolumeSlider({volume, setVolume, suggestions, input}) {
     const [cookies, setCookies] = useCookies(['user'])
     useEffect(() => {
       if (cookies.volume) {
@@ -24,6 +24,7 @@ export function VolumeSlider({volume, setVolume}) {
           value={volume}
           onMouseUp={(e) => { handleVolume(e.target.value) }}
           onInput={(e) => { setVolume(e.target.value) }}
+          disabled={suggestions.length !== 0 && input !== ''}
         />
         <VolumeUp />
       </div>

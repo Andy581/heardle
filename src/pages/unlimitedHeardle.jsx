@@ -16,6 +16,7 @@ import { RandomButton } from '../components/randomButton';
 export function UnlimitedHeardle({ db }) {
     const [score, setScore] = useState(0);
     const [videos, setVideos] = useState([]);
+    const [filteredSuggestions, setFilterSuggestions] = useState([]);
     const [startTime, setStartTime] = useState(1);
     const [sliderDisabled, setSliderDisabled] = useState(false);
     const [videoLoaded, setVideoLoaded] = useState(false);
@@ -178,8 +179,8 @@ export function UnlimitedHeardle({ db }) {
                                 :
                                 <Loading />
                             }
-                            <VolumeSlider volume={volume} setVolume={setVolume} />
-                            <Autocomplete userInput={input} setUserInput={setInput} suggestions={titles} handleGuess={handleGuess} />
+                            <VolumeSlider volume={volume} setVolume={setVolume} input={input} suggestions={filteredSuggestions} />
+                            <Autocomplete userInput={input} setUserInput={setInput} suggestions={titles} handleGuess={handleGuess} filteredSuggestions={filteredSuggestions} setFilterSuggestions={setFilterSuggestions}/>
                             <div class="w-2/6 max-[768px]:w-full flex justify-between">
                                 <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded disabled:opacity-25 disabled:bg-blue-500"
                                     onClick={handleSkip}

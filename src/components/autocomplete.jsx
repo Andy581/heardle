@@ -1,9 +1,9 @@
 import React from 'react';
 import { useState } from 'react';
 
-export default function Autocomplete({ suggestions, userInput, setUserInput, handleGuess }) {
+export default function Autocomplete({ suggestions, userInput, setUserInput, handleGuess, filteredSuggestions, setFilterSuggestions }) {
   const [activeSuggestion, setActiveSuggestion]  = useState(0);
-  const [filteredSuggestions, setFilterSuggestions] = useState([]);
+  // const [filteredSuggestions, setFilterSuggestions] = useState([]);
   const [showSuggestion, setShowSuggestion] = useState(false);
 
   function handleOnChange(value) {
