@@ -134,7 +134,7 @@ export function UnlimitedHeardle({ db }) {
                         </p>
                         <Attempts attemptDetails={attemptDetails} />
                         <div class="">
-                            <iframe id="secretVideo" width="560" height="360" src={`https://www.youtube.com/embed/${video.videoId}?&enablejsapi=1`} title="YouTube video player" frameborder="0" allow="autoplay" allowfullscreen onLoad={() => handleLoad({ cookies, setVideoLoaded })} />
+                            <iframe id="secretVideo" width="0" height="0" src={`https://www.youtube.com/embed/${video.videoId}?&enablejsapi=1`} title="YouTube video player" frameborder="0" allow="autoplay" allowfullscreen onLoad={() => handleLoad({ cookies, setVideoLoaded })} />
                         </div>
                     </>
                     :
