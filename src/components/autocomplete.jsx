@@ -27,8 +27,7 @@ export default function Autocomplete({ suggestions, userInput, setUserInput, han
   }
   function handleKeyDown(key) {
     if (key === 'ArrowUp') {
-      console.log("hello");
-      if (activeSuggestion - 1 === filteredSuggestions.length) {
+      if (activeSuggestion + 1  === filteredSuggestions.length) {
         return;
       }
       setActiveSuggestion(activeSuggestion+1);
