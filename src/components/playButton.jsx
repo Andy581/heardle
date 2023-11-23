@@ -14,8 +14,7 @@ export default function PlayButton({ setSliderDisabled, setSongBar, startTime, d
                 var data = JSON.parse(msg.data);
                 if (data.event && data.event === 'infoDelivery' )  {
                     var info = data.info;
-                    console.log(info.currentTime, (Number(startTime) + Number(duration)))
-                    if (info.currentTime && info.currentTime >= (Number(startTime) + Number(duration))) {
+                    if (info.currentTime && info.currentTime >= Number(startTime) + Number(duration)) {
                         setSongBar({ duration: 0, width: 0 });
                         var data = { event: 'command', func: 'seekTo', args: [startTime, true] }
                         var message = JSON.stringify(data);

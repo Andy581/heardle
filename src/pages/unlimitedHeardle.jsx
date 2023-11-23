@@ -55,6 +55,10 @@ export function UnlimitedHeardle({ db }) {
         }
         movePotentialBar();
     }
+    function handleSkipSong() {
+        setScore(score+1);
+        return nextSong();
+    }
     function handleEndGame() {
         setGameEnded(true);
         setSliderDisabled(true);
@@ -191,6 +195,11 @@ export function UnlimitedHeardle({ db }) {
                                     onClick={() => handleAsk(video.videoId, startTime, count, sectionColors, { setCopied })}
                                 >
                                     Ask a friend
+                                </button>
+                                <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded disabled:opacity-25 disabled:bg-blue-500"
+                                    onClick={handleSkipSong}
+                                >
+                                    Skip Song
                                 </button>
                                 <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded disabled:opacity-25 disabled:bg-blue-500"
                                     disabled={input === '' || !titles.find((title) => title === input)}
