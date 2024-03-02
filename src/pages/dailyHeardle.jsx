@@ -1,3 +1,4 @@
+import axios from 'axios';
 import Attempts from '../components/attempt';
 import Title from '../components/title';
 import GameBar from '../components/gameBar';
@@ -8,10 +9,10 @@ import Countdown from '../components/countdown'
 import Results from '../components/results';
 import Autocomplete from '../components/autocomplete';
 import { Loading } from '../components/svg';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import moment from 'moment/moment';
-import { handleLoad, isToday, getRandomVideo } from '../common';
-import { CURRENT, PAST, FUTURE, SKIPPED, WRONG, CORRECT, EMPTY_ATTEMPTS, DURATION } from '../constants';
+import { handleLoad, isToday, getRandomVideo, getRandomInt } from '../common';
+import { API_KEY, CURRENT, PAST, FUTURE, SKIPPED, WRONG, CORRECT, EMPTY_ATTEMPTS, DURATION } from '../constants';
 import { StartTimeSlider, VolumeSlider } from '../components/sliders';
 import { Sidebar } from '../components/sidebar';
 import { useCookies } from 'react-cookie';
@@ -141,8 +142,24 @@ export function DailyHeardle({ db }) {
       const docRef = doc(db, "dailyHeardle", genre);
       const docSnap = await getDoc(docRef);
       const daily = docSnap.data();
-      getRandomVideo(daily.videos, { setVideo, setTitles });
+      getTodayRandomVideo(daily.videos, docRef);
     }
+  }
+
+  async function getTodayRandomVideo(videos, docRef) {
+    var randomVideo = videos[getRandomInt(videos.length)];
+    var time;
+    var response = await axios.get(`https://youtube.googleapis.com/youtube/v3/videos?part=snippet%2CcontentDetails&id=${randomVideo.videoId}&key=${API_KEY}`);
+    var timeString = response.data.items[0].contentDetails.duration;
+    time = moment.duration(timeString, moment.ISO_8601).asSeconds();
+    setVideo({ title: randomVideo.title, maxTime: time, videoId: randomVideo.videoId });
+    setTitles(videos.map(video => video.title));
+    await updateDoc(docRef, {
+      date: moment().format('MM-DD-YYYY'),
+      title: randomVideo.title,
+      maxTime: time,
+      videoId: randomVideo.videoId,
+      videos:  videos } );
   }
 
   function handleCopy() {
@@ -217,7 +234,7 @@ export function DailyHeardle({ db }) {
                 <Loading />
               }
               <VolumeSlider volume={volume} setVolume={setVolume} suggestions={filteredSuggestions} input={input} />
-              <Autocomplete userInput={input} setUserInput={setInput} suggestions={titles} handleGuess={handleGuess} filteredSuggestions={filteredSuggestions} setFilterSuggestions={setFilterSuggestions}/>
+              <Autocomplete userInput={input} setUserInput={setInput} suggestions={titles} handleGuess={handleGuess} filteredSuggestions={filteredSuggestions} setFilterSuggestions={setFilterSuggestions} />
               <div class="w-2/6 max-[768px]:w-full flex justify-between">
                 <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded disabled:opacity-25 disabled:bg-blue-500"
                   onClick={handleSkip}
