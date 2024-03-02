@@ -5,14 +5,13 @@ import { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import PlayButton from '../components/playButton';
 import Countdown from '../components/countdown'
-import axios from 'axios';
-import Autocomplete from '../components/autocomplete';
 import Results from '../components/results';
+import Autocomplete from '../components/autocomplete';
 import { Loading } from '../components/svg';
-import { doc, getDoc, updateDoc } from 'firebase/firestore';
+import { doc, getDoc } from 'firebase/firestore';
 import moment from 'moment/moment';
-import { getRandomInt, handleLoad, isToday } from '../common';
-import { API_KEY, CURRENT, PAST, FUTURE, SKIPPED, WRONG, CORRECT, EMPTY_ATTEMPTS, DURATION, PLAYLIST_ID } from '../constants';
+import { handleLoad, isToday, getRandomVideo } from '../common';
+import { CURRENT, PAST, FUTURE, SKIPPED, WRONG, CORRECT, EMPTY_ATTEMPTS, DURATION } from '../constants';
 import { StartTimeSlider, VolumeSlider } from '../components/sliders';
 import { Sidebar } from '../components/sidebar';
 import { useCookies } from 'react-cookie';
@@ -139,50 +138,13 @@ export function DailyHeardle({ db }) {
       setTitles(daily.videos.map(video => video.title));
     }
     else {
-      var pageInfo;
-      var nextPageToken = '';
-      var playlist = await axios.get(`https://youtube.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=${PLAYLIST_ID[genre]}&key=${API_KEY}`);
-      pageInfo = playlist.data.pageInfo;
-      var data = []
-      data = data.concat(playlist.data.items);
-      nextPageToken = playlist.data.nextPageToken;
-      for (let i = 1; i < Math.ceil(pageInfo.totalResults / pageInfo.resultsPerPage); i++) {
-        var nextPage = await axios.get(`https://youtube.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&pageToken=${nextPageToken}&playlistId=${PLAYLIST_ID[genre]}&key=${API_KEY}`);
-        data = data.concat(nextPage.data.items);
-        nextPageToken = nextPage.data.nextPageToken;
-      }
-      getRandomVideo(data, docRef);
+      const docRef = doc(db, "dailyHeardle", genre);
+      const docSnap = await getDoc(docRef);
+      const daily = docSnap.data();
+      getRandomVideo(daily.videos, { setVideo, setTitles });
     }
   }
 
-  async function getRandomVideo(data, docRef) {
-    var data2 = data.map(item => ({videoId: item.snippet.resourceId.videoId, title: item.snippet.title}));
-    var audioText = ["[Audio]", "「Audio」", "[audio]" , '[AUDIO]', '(Audio)', '「Official Audio」', "[Official Audio]", "(Official Audio)", '(AUDIO)', 'AUDIO', 'Audio', '[MP3 Audio]', '[Full Audio]'];
-    for (var i = 0; i < data2.length; i++ ) {
-        for (var j = 0; j < audioText.length; j++) {
-            if (data2[i].title.indexOf(audioText[j]) > 1) {
-                data2[i].title = data2[i].title.replace(audioText[j], '');
-                break;
-            }
-        }
-        data2[i].title = data2[i].title.trim();
-    }
-    setTitles(data2.map(item => item.title));
-    var randomInt = getRandomInt(data2.length);
-    var randomVideoId = data2[randomInt].videoId;
-    var title = data2[randomInt].title;
-    var time;
-    var response = await axios.get(`https://youtube.googleapis.com/youtube/v3/videos?part=snippet%2CcontentDetails&id=${randomVideoId}&key=${API_KEY}`);
-    var timeString = response.data.items[0].contentDetails.duration;
-    time = moment.duration(timeString, moment.ISO_8601).asSeconds();
-    setVideo({ title: title, maxTime: time, videoId: randomVideoId });
-    await updateDoc(docRef, {
-      date: moment().format('MM-DD-YYYY'),
-      title: title,
-      maxTime: time,
-      videoId: randomVideoId,
-      videos:  data2 } );
-  }
   function handleCopy() {
     var title = genre === "kpop" ? "Kpop" : "Taylor Swift"
     var res = title + " Heardle " + moment().format("MMM Do YYYY") + "\n";
